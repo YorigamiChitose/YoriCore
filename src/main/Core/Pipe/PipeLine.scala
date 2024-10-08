@@ -5,7 +5,7 @@ import chisel3.util._
 import Core.Pipe.module._
 
 class pipeLine[T <: StageBundle](stageBundle: T) extends Module {
-  val ioPipeCtrl     = IO(new pipeRegCtrlBundle())
+  val ioPipeCtrl  = IO(new pipeRegCtrlBundle())
   val ioPrevStage = IO(Flipped(stageBundle))
   val ioNextStage = IO(stageBundle)
 
