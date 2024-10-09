@@ -6,12 +6,13 @@ import chisel3.util._
 import Core.Pipe.module._
 import Core.Config.Config
 
+// PCU 控制信号
 class PCUCtrlBundle extends Bundle {
-  val flushPC = Input(UInt(Config.ADDR.WIDTH.W))
-  val pipe    = new pipeCtrlBundle()
+  val flushPC = Input(UInt(Config.ADDR.WIDTH.W)) // 冲刷pc值
+  val pipe    = new PipeCtrlBundle() // pipe控制信号
 }
 
+// PCU 流水信号
 class PCUStageBundle extends StageBundle {
-  val valid = Output(Bool())
-  val pc    = Output(UInt(Config.ADDR.WIDTH.W))
+  val pc = Output(UInt(Config.ADDR.WIDTH.W)) // PC值
 }
