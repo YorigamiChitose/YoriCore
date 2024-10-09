@@ -11,7 +11,7 @@ CHISEL_MAIN_DIR       = $(CHISEL_DIR)/main
 CHISEL_TEST_DIR       = $(CHISEL_DIR)/test
 CHISEL_SRC_PATH       = $(foreach dir, $(shell find $(CHISEL_MAIN_DIR) -maxdepth 3 -type d), $(wildcard $(dir)/*.scala))
 CHISEL_TEST_DIR       = $(TOP_DIR)/test_run_dir
-CHISEL_TOOL           = main.Tools.build
+CHISEL_TOOL           = Tools.build
 
 verilog: $(CHISEL_BUILD_TOP_VSRC)
 
@@ -35,5 +35,8 @@ checkformat:
 
 clean:
 	rm -rf $(BUILD_DIR)
+
+clean-mill:
+	mill clean
 
 .PHONY: test verilog help reformat checkformat clean
