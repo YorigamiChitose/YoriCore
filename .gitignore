@@ -2,6 +2,8 @@
 /*/
 
 !/src/
+!/csrc/
+!/vsrc/
 !/.github/
 
 !/Makefile

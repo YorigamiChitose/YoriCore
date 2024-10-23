@@ -8,11 +8,11 @@ import Core.Config.Config
 
 // PCU 控制信号
 class PCUCtrlBundle extends Bundle {
-  val flushPC = Input(UInt(Config.ADDR.WIDTH.W)) // 冲刷pc值
-  val pipe    = new PipeCtrlBundle() // pipe控制信号
+  val flushPC = Input(UInt(Config.Addr.Width.W)) // 冲刷pc值
+  val pipe    = new PipeCtrlBundle()             // pipe控制信号
 }
 
 // PCU 流水信号
 class PCUStageBundle extends StageBundle {
-  val pc = Output(UInt(Config.ADDR.WIDTH.W)) // PC值
+  val pc = Output(UInt(Config.Addr.Width.W)) // PC值
 }
