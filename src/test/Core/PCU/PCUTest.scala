@@ -18,22 +18,22 @@ class PCUTest extends AnyFreeSpec with Matchers {
       // reset
       dut.reset.poke(true.B)
       dut.clock.step()
-      dut.ioPCU.pc.expect(Config.ADDR.BASE.U)
+      dut.ioPCU.pc.expect(Config.Addr.Base.U)
       // 正常步进
       dut.reset.poke(false.B)
       dut.clock.step()
-      dut.ioPCU.pc.expect((Config.ADDR.BASE + 4).U)
+      dut.ioPCU.pc.expect((Config.Addr.Base + 4).U)
       // pc冲刷
-      dut.ioCtrl.flushPC.poke((Config.ADDR.BASE + 0x1000_0000).U)
+      dut.ioCtrl.flushPC.poke((Config.Addr.Base + 0x1000_0000).U)
       dut.ioCtrl.pipe.flush.poke(true.B)
       dut.clock.step()
-      dut.ioPCU.pc.expect((Config.ADDR.BASE + 0x1000_0000).U)
+      dut.ioPCU.pc.expect((Config.Addr.Base + 0x1000_0000).U)
       // 暂停
       dut.ioCtrl.flushPC.poke(0.U)
       dut.ioCtrl.pipe.flush.poke(false.B)
       dut.ioCtrl.pipe.stall.poke(true.B)
       dut.clock.step()
-      dut.ioPCU.pc.expect((Config.ADDR.BASE + 0x1000_0000).U)
+      dut.ioPCU.pc.expect((Config.Addr.Base + 0x1000_0000).U)
     }
   }
 }

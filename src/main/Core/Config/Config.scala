@@ -4,23 +4,27 @@ import chisel3._
 import chisel3.util._
 
 object Config {
-  object ADDR {
-    val BASE  = 0x8000_0000L
-    val WIDTH = 32
+  object Inst {
+    val Width = 32
   }
 
-  object REG {
-    val NUM       = 16
-    val WIDTH     = 32
-    val NUM_WIDTH = chisel3.util.log2Ceil(NUM)
+  object Addr {
+    val Base  = 0x8000_0000L
+    val Width = 32
   }
 
-  object CSR {
-    val DATA_WIDTH = DATA.XLEN
-    val ADDR_WIDTH = 12
+  object Reg {
+    val Num      = 16
+    val Width    = 32
+    val NumWidth = chisel3.util.log2Ceil(Num)
   }
 
-  object DATA {
+  object Csr {
+    val DataWidth = Data.XLEN
+    val AddrWidth = 12
+  }
+
+  object Data {
     val XLEN = 32
     val B    = 8
     val H    = 2 * B
