@@ -19,7 +19,7 @@ class IFU extends Module {
   ioIMem.pc    := ioPCU.pc                                  // PC值
 
   // Pipe控制
-  ioCtrl.pipe.valid := ioIMem.ready                         // 读取成功 向后传输
+  ioCtrl.pipe.valid := ioIMem.ready && ioValid              // 读取成功 上级有效 向后传输
   ioCtrl.busy       := ioIMem.busy                          // 忙信号
   ioCtrl.stallReq   := Mux(ioValid, !ioIMem.ready, false.B) // 读取时暂停
 

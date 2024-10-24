@@ -20,6 +20,10 @@ class IDU extends Module {
 
   val inst = Mux(ioValid, ioIFU.inst, 0.U) // 指令
 
+  // 指令ListLookup解析
+  val rs1En :: rs2En :: rdEn :: op1Type :: op2Type :: aluCtrl :: immType :: branchCtrl :: mulCtrl :: divCtrl :: memCtrl :: csrCtrl :: excType :: Nil =
+    ListLookup(inst, ALL.defaultList, ALL.instList)
+
   val rs1Data = Mux(ioIDUForwarding.rs1.needPass, ioIDUForwarding.rs1.data, ioIDUForwarding.rs1.data) // 通用寄存器数据
   val rs2Data = Mux(ioIDUForwarding.rs2.needPass, ioIDUForwarding.rs2.data, ioIDUForwarding.rs2.data) // 通用寄存器数据
 
@@ -43,10 +47,6 @@ class IDU extends Module {
   val immSAMT = Cat(Fill(Config.Data.XLEN - 6, 0.U), inst(25, 20))
   val immZIMM = Cat(Fill(Config.Data.XLEN - 5, 0.U), inst(19, 15))
 
-  // 指令ListLookup解析
-  val rs1En :: rs2En :: rdEn :: op1Type :: op2Type :: aluCtrl :: immType :: branchCtrl :: mulCtrl :: divCtrl :: memCtrl :: csrCtrl :: excType :: Nil =
-    ListLookup(inst, ALL.defaultList, ALL.instList)
-
   // 立即数
   val immData = MuxCase(
     0.U(Config.Data.XLEN.W),
@@ -69,6 +69,10 @@ class IDU extends Module {
   ioRegIDU.rs1.addr := rs1Addr // 地址
   ioRegIDU.rs2.addr := rs2Addr // 地址
 
+  // csr寄存器IO
+  ioCSRIDU.csr.en   := csrReadEn
+  ioCSRIDU.csr.addr := csrAddr
+
   // 前递IO
   ioIDUForwarding.rs1.en   := rs1En     // 使能
   ioIDUForwarding.rs2.en   := rs2En     // 使能
@@ -78,7 +82,8 @@ class IDU extends Module {
   ioIDUForwarding.csr.addr := csrAddr   // 地址
 
   // Pipe控制
-  ioCtrl.stallReq := ioIDUForwarding.needStall // 前递需要等待
+  ioCtrl.pipe.valid := ioValid                   // 上级有效 向后传输
+  ioCtrl.stallReq   := ioIDUForwarding.needStall // 前递需要等待
 
   // IDU IO
   ioIDU.pc         := ioIFU.pc   // PC值

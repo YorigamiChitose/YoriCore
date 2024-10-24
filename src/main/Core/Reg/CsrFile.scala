@@ -7,17 +7,17 @@ import Core.Config.Config
 import Core.Reg.module._
 import Core.IDU.module._
 
-class bundleMEPC extends Bundle {
+class BundleMEPC extends Bundle {
   val pc      = UInt(Config.Csr.DataWidth.W)
   def initVal = 0.U.asTypeOf(this)
 }
 
-class bundleMCAUSE extends Bundle {
+class BundleMCAUSE extends Bundle {
   val causeId = UInt(Config.Csr.DataWidth.W)
   def initVal = 0.U.asTypeOf(this)
 }
 
-class bundleMSTATUS extends Bundle {
+class BundleMSTATUS extends Bundle {
   val SD          = UInt(1.W)
   val XLEN_SUB_24 = UInt((Config.Csr.DataWidth - 24).W)
   val TSR         = UInt(1.W)
@@ -42,7 +42,7 @@ class bundleMSTATUS extends Bundle {
   def initVal     = "h1800".U.asTypeOf(this)
 }
 
-class bundleMTVEC extends Bundle {
+class BundleMTVEC extends Bundle {
   val causeId = UInt(Config.Csr.DataWidth.W)
   def initVal = 0.U.asTypeOf(this)
 }
@@ -54,7 +54,7 @@ object CSR_MAP {
   val MTVEC   = "h305".U(Config.Csr.AddrWidth.W)
 }
 
-class csrFile extends Module {
+class CsrFile extends Module {
   val ioCSRIDU = IO(new CSRIDUBundle())
   val ioCSRWBU = IO(new CSRWBUBundle())
 
@@ -63,10 +63,10 @@ class csrFile extends Module {
   val flushPC = WireDefault(0.U(Config.Csr.DataWidth.W))
 
   val mod     = RegInit("b11".U(2.W))
-  val MEPC    = RegInit((new bundleMEPC).initVal)
-  val MCAUSE  = RegInit((new bundleMCAUSE).initVal)
-  val MSTATUS = RegInit((new bundleMSTATUS).initVal)
-  val MTVEC   = RegInit((new bundleMTVEC).initVal)
+  val MEPC    = RegInit((new BundleMEPC).initVal)
+  val MCAUSE  = RegInit((new BundleMCAUSE).initVal)
+  val MSTATUS = RegInit((new BundleMSTATUS).initVal)
+  val MTVEC   = RegInit((new BundleMTVEC).initVal)
 
   dataOut := MuxCase(
     0.U(Config.Csr.DataWidth.W),
