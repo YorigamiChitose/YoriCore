@@ -19,6 +19,9 @@ class PCU extends Module {
   nextPc := Mux(ioCtrl.pipe.flush, ioCtrl.flushPC, Mux(ioCtrl.pipe.stall, pc, pcReg + 4.U))
   pc     := pcReg
 
-  ioPCU.pc          := pc     // 向后级传递pc
+  // Pipe控制
   ioCtrl.pipe.valid := true.B // PCU准备信号默认一直为有效
+
+  // PCU IO
+  ioPCU.pc := pc // 向后级传递PC
 }

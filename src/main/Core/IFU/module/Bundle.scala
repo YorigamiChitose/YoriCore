@@ -8,14 +8,15 @@ import Core.Config.Config
 
 // IFU 控制信号
 class IFUCtrlBundle extends Bundle {
-  val stallReq = Output(Bool())
-  val busy     = Output(Bool())
+  val stallReq = Output(Bool())       // 停止请求
+  val busy     = Output(Bool())       // 忙信号
   val pipe     = new PipeCtrlBundle() // pipe控制信号
 }
 
 // IFU 流水信号
 class IFUStageBundle extends StageBundle {
-  val inst = Output(UInt(Config.Inst.Width.W))
+  val pc   = Output(UInt(Config.Addr.Width.W)) // PC值
+  val inst = Output(UInt(Config.Inst.Width.W)) // 指令
 }
 
 // IFU - 存储器 接口
@@ -24,6 +25,6 @@ class IMemBundle extends Bundle {
   val ready = Output(Bool()) // 存储器准备好指令
   val busy  = Output(Bool()) // 存储器正在读取
 
-  val pc   = Input(UInt(Config.Addr.Width.W))  // pc值
+  val pc   = Input(UInt(Config.Addr.Width.W))  // PC值
   val inst = Output(UInt(Config.Inst.Width.W)) // 指令
 }
