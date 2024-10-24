@@ -6,7 +6,7 @@ import chisel3.util._
 import Core.Config.Config
 import Core.Reg.module._
 
-class regFile extends Module {
+class RegFile extends Module {
   val ioRegIDU = IO(new RegIDUBundle())
   val ioRegWBU = IO(new RegWBUBundle())
 
