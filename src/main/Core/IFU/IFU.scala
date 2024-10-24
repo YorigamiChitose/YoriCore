@@ -14,11 +14,16 @@ class IFU extends Module {
   val ioIMem  = IO(Flipped(new IMemBundle()))     // IFU-存储器
   val ioValid = IO(Input(Bool()))                 // 上级数据有效信号
 
-  ioCtrl.stallReq := Mux(ioValid, !ioIMem.ready, false.B) // 读取时暂停
-  ioCtrl.busy     := ioIMem.busy                          // 忙信号
-  ioIMem.valid    := ioValid                              // 上级数据有效 可读取指令
-  ioIMem.pc       := ioPCU.pc                             // PC值
+  // IMem
+  ioIMem.valid := Mux(ioValid, !ioCtrl.pipe.flush, false.B) // 上级数据有效 无冲刷 可读取指令
+  ioIMem.pc    := ioPCU.pc                                  // PC值
 
-  ioCtrl.pipe.valid := ioIMem.ready // 读取成功 向后传输
-  ioIFU.inst        := ioIMem.inst  // 指令
+  // Pipe控制
+  ioCtrl.pipe.valid := ioIMem.ready                         // 读取成功 向后传输
+  ioCtrl.busy       := ioIMem.busy                          // 忙信号
+  ioCtrl.stallReq   := Mux(ioValid, !ioIMem.ready, false.B) // 读取时暂停
+
+  // IFU IO
+  ioIFU.pc   := ioPCU.pc    // PC值
+  ioIFU.inst := ioIMem.inst // 指令
 }
