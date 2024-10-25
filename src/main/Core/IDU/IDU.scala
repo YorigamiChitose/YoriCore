@@ -37,29 +37,30 @@ class IDU extends Module {
   val rs2Addr = inst(24, 20) // 源寄存器地址
 
   // 立即数扩展
-  val immR    = 0.U(Config.Data.XLEN.W)
-  val immN    = 0.U(Config.Data.XLEN.W)
-  val immI    = Cat(Fill(Config.Data.XLEN - 12, inst(31)), inst(31, 20))
-  val immS    = Cat(Fill(Config.Data.XLEN - 12, inst(31)), inst(31, 25), inst(11, 7))
-  val immB    = Cat(Fill(Config.Data.XLEN - 12, inst(31)), inst(7), inst(30, 25), inst(11, 8), 0.U(1.W))
-  val immU    = Cat(Fill(32, inst(31)), Cat(inst(31, 12), Fill(12, 0.U)))
-  val immJ    = Cat(Fill(Config.Data.XLEN - 20, inst(31)), inst(31), inst(19, 12), inst(20), inst(30, 21), Fill(1, 0.U))
-  val immSAMT = Cat(Fill(Config.Data.XLEN - 6, 0.U), inst(25, 20))
-  val immZIMM = Cat(Fill(Config.Data.XLEN - 5, 0.U), inst(19, 15))
+  val immR     = 0.U(Config.Data.XLEN.W)
+  val immN     = 0.U(Config.Data.XLEN.W)
+  val immI     = Cat(Fill(Config.Data.XLEN - 12, inst(31)), inst(31, 20))
+  val immS     = Cat(Fill(Config.Data.XLEN - 12, inst(31)), inst(31, 25), inst(11, 7))
+  val immB     = Cat(Fill(Config.Data.XLEN - 12, inst(31)), inst(7), inst(30, 25), inst(11, 8), 0.U(1.W))
+  val immU     = Cat(Fill(32, inst(31)), Cat(inst(31, 12), Fill(12, 0.U)))
+  val immJ     = Cat(Fill(Config.Data.XLEN - 20, inst(31)), inst(31), inst(19, 12), inst(20), inst(30, 21), Fill(1, 0.U))
+  val immSHAMT = Cat(Fill(Config.Data.XLEN - 6, 0.U), inst(25, 20))
+  val immZIMM  = Cat(Fill(Config.Data.XLEN - 5, 0.U), inst(19, 15))
 
   // 立即数
   val immData = MuxCase(
     0.U(Config.Data.XLEN.W),
     Seq(
-      (immType === imm.I)    -> immI,
-      (immType === imm.B)    -> immB,
-      (immType === imm.J)    -> immJ,
-      (immType === imm.U)    -> immU,
-      (immType === imm.S)    -> immS,
-      (immType === imm.R)    -> immR,
-      (immType === imm.S)    -> immS,
-      (immType === imm.N)    -> immN,
-      (immType === imm.ZIMM) -> immZIMM
+      (immType === imm.I)     -> immI,
+      (immType === imm.B)     -> immB,
+      (immType === imm.J)     -> immJ,
+      (immType === imm.U)     -> immU,
+      (immType === imm.S)     -> immS,
+      (immType === imm.R)     -> immR,
+      (immType === imm.S)     -> immS,
+      (immType === imm.N)     -> immN,
+      (immType === imm.SHAMT) -> immSHAMT,
+      (immType === imm.ZIMM)  -> immZIMM
     )
   )
 

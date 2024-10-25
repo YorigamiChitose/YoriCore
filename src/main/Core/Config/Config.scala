@@ -14,8 +14,8 @@ object Config {
   }
 
   object Reg {
-    val Num      = 16
-    val Width    = 32
+    val Num      = 32
+    val Width    = Data.XLEN
     val NumWidth = chisel3.util.log2Ceil(Num)
   }
 

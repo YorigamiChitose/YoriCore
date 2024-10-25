@@ -133,16 +133,21 @@ object csr {
 }
 
 object exc {
-  val WIDTH        = log2Ceil(5)
+  val WIDTH        = log2Ceil(10)
   val NOP          = 0.U(WIDTH.W)
   val EBREAK       = 1.U(WIDTH.W)
   val ECALL        = 2.U(WIDTH.W)
   val ILLEGAL_INST = 3.U(WIDTH.W)
   val MRET         = 4.U(WIDTH.W)
+  val SRET         = 5.U(WIDTH.W)
+  val WFI          = 6.U(WIDTH.W)
+  val SFENCE_VMA   = 7.U(WIDTH.W)
+  val FENCE        = 8.U(WIDTH.W)
+  val FENCE_I      = 9.U(WIDTH.W)
 }
 
 object ALL {
   val defaultList =
     rs1.NOP :: rs2.NOP :: rd.NOP :: op1.NOP :: op2.NOP :: imm.N :: alu.NOP :: branch.NOP :: mul.NOP :: div.NOP :: mem.NOP :: csr.NOP :: exc.ILLEGAL_INST :: Nil
-  val instList    = RV32I.table
+  val instList    = RV32I.table ++ RVMSU.table
 }
