@@ -115,6 +115,21 @@ class CsrFile extends Module {
       MSTATUS.MPIE := 1.U
       MSTATUS.MPP  := 0.U
     }
+    is(exc.FENCE_I) {
+      // TODO: FENCE_I
+    }
+    is(exc.SRET) {
+      // TODO: SRET
+    }
+    is(exc.FENCE) {
+      // TODO: FENCE
+    }
+    is(exc.SFENCE_VMA) {
+      // TODO: SFENCE_VMA
+    }
+    is(exc.WFI) {
+      // TODO: WFI
+    }
   }
 
   flushPC := MuxCase(
