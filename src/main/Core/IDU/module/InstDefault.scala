@@ -50,7 +50,7 @@ object imm {
 }
 
 object alu {
-  val WIDTH = log2Ceil(16)
+  val WIDTH = log2Ceil(11)
   val NOP   = 0.U(WIDTH.W)
   val ADD   = 1.U(WIDTH.W)
   val SUB   = 2.U(WIDTH.W)
@@ -62,33 +62,23 @@ object alu {
   val SLL   = 8.U(WIDTH.W)
   val SRL   = 9.U(WIDTH.W)
   val SRA   = 10.U(WIDTH.W)
-  val ADDW  = 11.U(WIDTH.W)
-  val SUBW  = 12.U(WIDTH.W)
-  val SLLW  = 13.U(WIDTH.W)
-  val SRLW  = 14.U(WIDTH.W)
-  val SRAW  = 15.U(WIDTH.W)
 }
 
 object mul {
-  val WIDTH  = log2Ceil(6)
+  val WIDTH  = log2Ceil(5)
   val NOP    = 0.U(WIDTH.W)
   val MUL    = 1.U(WIDTH.W)
   val MULH   = 2.U(WIDTH.W)
   val MULHU  = 3.U(WIDTH.W)
   val MULHSU = 4.U(WIDTH.W)
-  val MULW   = 5.U(WIDTH.W)
 }
 object div {
-  val WIDTH = log2Ceil(9)
+  val WIDTH = log2Ceil(5)
   val NOP   = 0.U(WIDTH.W)
   val DIV   = 1.U(WIDTH.W)
   val REM   = 2.U(WIDTH.W)
   val DIVU  = 3.U(WIDTH.W)
   val REMU  = 4.U(WIDTH.W)
-  val DIVW  = 5.U(WIDTH.W)
-  val REMW  = 6.U(WIDTH.W)
-  val DIVUW = 7.U(WIDTH.W)
-  val REMUW = 8.U(WIDTH.W)
 }
 
 object branch {
@@ -105,20 +95,16 @@ object branch {
 }
 
 object mem {
-  val WIDTH  = log2Ceil(13)
-  val NOP    = 0.U(WIDTH.W)
-  val LB     = 1.U(WIDTH.W)
-  val LBU    = 2.U(WIDTH.W)
-  val LH     = 3.U(WIDTH.W)
-  val LHU    = 4.U(WIDTH.W)
-  val LW     = 5.U(WIDTH.W)
-  val LWU    = 6.U(WIDTH.W)
-  val LD     = 7.U(WIDTH.W)
-  val SB     = 8.U(WIDTH.W)
-  val SH     = 9.U(WIDTH.W)
-  val SW     = 10.U(WIDTH.W)
-  val SD     = 11.U(WIDTH.W)
-  val FENCEI = 12.U(WIDTH.W)
+  val WIDTH = log2Ceil(9)
+  val NOP   = 0.U(WIDTH.W)
+  val LB    = 1.U(WIDTH.W)
+  val LH    = 2.U(WIDTH.W)
+  val LBU   = 3.U(WIDTH.W)
+  val LHU   = 4.U(WIDTH.W)
+  val LW    = 5.U(WIDTH.W)
+  val SB    = 6.U(WIDTH.W)
+  val SH    = 7.U(WIDTH.W)
+  val SW    = 8.U(WIDTH.W)
 }
 
 object csr {
