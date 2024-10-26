@@ -7,6 +7,8 @@ import Core.Config.Config
 import Core.Reg.module._
 import Core.IDU.module._
 
+// TODO: 完善M级 完成S级 U级
+
 class BundleMEPC extends Bundle {
   val pc      = UInt(Config.Csr.DataWidth.W)
   def initVal = 0.U.asTypeOf(this)
@@ -58,9 +60,10 @@ class CsrFile extends Module {
   val ioCSRIDU = IO(new CSRIDUBundle())
   val ioCSRWBU = IO(new CSRWBUBundle())
 
-  val dataOut = WireDefault(0.U(Config.Csr.DataWidth.W))
-  val dataIn  = WireDefault(0.U(Config.Csr.DataWidth.W))
-  val flushPC = WireDefault(0.U(Config.Csr.DataWidth.W))
+  val dataOut    = WireDefault(0.U(Config.Csr.DataWidth.W))
+  val dataIn     = WireDefault(0.U(Config.Csr.DataWidth.W))
+  val preFlushPC = WireDefault(0.U(Config.Csr.DataWidth.W))
+  val flushPC    = WireDefault(0.U(Config.Csr.DataWidth.W))
 
   val mod     = RegInit("b11".U(2.W))
   val MEPC    = RegInit((new BundleMEPC).initVal)
@@ -132,14 +135,24 @@ class CsrFile extends Module {
     }
   }
 
+  preFlushPC := MuxCase(
+    0.U(Config.Addr.Width.W),
+    Seq(
+      (ioCSRIDU.excType === exc.MRET)  -> MEPC.asUInt,
+      (ioCSRIDU.excType === exc.ECALL) -> MTVEC.asUInt
+    )
+  )
+
   flushPC := MuxCase(
     0.U(Config.Addr.Width.W),
     Seq(
       (ioCSRWBU.excType === exc.MRET)  -> MEPC.asUInt,
-      (ioCSRWBU.excType === exc.ECALL) -> MTVEC.asUInt
+      (ioCSRWBU.excType === exc.ECALL) -> MTVEC.asUInt // TODO: SRET
     )
   )
 
-  ioCSRWBU.flushPC  := flushPC
+  ioCSRIDU.preFlushPC := preFlushPC
+  ioCSRWBU.flushPC    := flushPC
+
   ioCSRIDU.csr.data := dataOut
 }

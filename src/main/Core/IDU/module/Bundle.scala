@@ -29,4 +29,6 @@ class IDUStageBundle extends StageBundle {
   val branchCtrl = Output(UInt(branch.WIDTH.W))         // 分支控制信号
   val memCtrl    = Output(UInt(mem.WIDTH.W))            // 访存控制信号
   val csrCtrl    = Output(UInt(csr.WIDTH.W))            // csr控制信号
+  val excType    = Output(UInt(exc.WIDTH.W))            // 异常连续
+  val preFlushPC = Output(UInt(exc.WIDTH.W))            // 预冲刷地址
 }

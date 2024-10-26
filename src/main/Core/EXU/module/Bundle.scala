@@ -7,8 +7,10 @@ import Core.Pipe.module._
 import Core.Config.Config
 
 class EXUCtrlBundle extends Bundle {
-  val stallReq = Output(Bool())       // 停止请求
-  val pipe     = new PipeCtrlBundle() // pipe控制信号
+  val flushReq = Output(Bool())                    // 冲刷请求
+  val flushPC  = Output(UInt(Config.Addr.Width.W)) // 冲刷地址
+  val stallReq = Output(Bool())                    // 停止请求
+  val pipe     = new PipeCtrlBundle()              // pipe控制信号
 }
 
 class EXUStageBundle extends StageBundle {

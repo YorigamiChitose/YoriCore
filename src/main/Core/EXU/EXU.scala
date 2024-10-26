@@ -89,7 +89,31 @@ class EXU extends Module {
       (ioIDU.aluCtrl =/= alu.NOP) -> ALUResult,
       (ioIDU.mulCtrl =/= mul.NOP) -> MULResult,
       (ioIDU.divCtrl =/= div.NOP) -> DIVResult,
-      (ioIDU.csrCtrl =/= csr.NOP) -> ioIDU.csrData
+      (ioIDU.csrCtrl =/= csr.NOP) -> ioIDU.csrData // TODO: LSU
+    )
+  )
+
+  // Pipe控制
+  ioCtrl.stallReq := ((ioIDU.mulCtrl =/= mul.NOP) && !MULReady) ||
+    ((ioIDU.divCtrl =/= div.NOP) && !DIVReady) ||
+    (ioIDU.memCtrl =/= mem.NOP) // TODO: LSU
+  ioCtrl.flushPC    := MuxCase(
+    0.U(Config.Addr.Width.W),
+    Seq(
+      isBranchSuccess                                                                           -> Branch.ioBranch.branchPC,
+      (ioIDU.excType === exc.ECALL || ioIDU.excType === exc.MRET || ioIDU.excType === exc.SRET) -> ioIDU.preFlushPC // TODO: CSR预冲刷逻辑待优化
+    )
+  )
+  ioCtrl.flushReq   := isBranchSuccess || (ioIDU.excType === exc.ECALL || ioIDU.excType === exc.MRET || ioIDU.excType === exc.SRET)
+  ioCtrl.pipe.valid := MuxCase(
+    false.B,
+    Seq(
+      (ioIDU.aluCtrl =/= alu.NOP)       -> true.B,
+      (ioIDU.branchCtrl =/= branch.NOP) -> true.B,
+      (ioIDU.csrCtrl =/= csr.NOP)       -> true.B,
+      (ioIDU.divCtrl =/= div.NOP)       -> DIVReady,
+      (ioIDU.memCtrl =/= mem.NOP)       -> false.B, // TODO: LSU
+      (ioIDU.mulCtrl =/= mul.NOP)       -> MULReady
     )
   )
 
@@ -102,7 +126,7 @@ class EXU extends Module {
   ioEXUForwarding.isMD     := (ioIDU.divCtrl =/= div.NOP) || (ioIDU.mulCtrl =/= mul.NOP) // 当前为乘除任务
   ioEXUForwarding.rd.en    := ioIDU.rdEn                                                 // 目的寄存器使能
   ioEXUForwarding.rd.addr  := ioIDU.rdAddr                                               // 目的寄存器地址
-  ioEXUForwarding.rd.data  := DontCare                                                   // TODO: 目的寄存器数据
+  ioEXUForwarding.rd.data  := EXUResult                                                  // 目的寄存器数据
   ioEXUForwarding.csr.en   := ioIDU.csrWriteEn                                           // csr使能
   ioEXUForwarding.csr.addr := ioIDU.csrAddr                                              // csr地址
   ioEXUForwarding.csr.data := CSRResult                                                  // csr数据
@@ -116,5 +140,5 @@ class EXU extends Module {
   ioEXU.csrWriteEn := ioIDU.csrWriteEn // csr写使能
   ioEXU.rs1Data    := ioIDU.rs1Data    // rs1数据
   ioEXU.rs2Data    := ioIDU.rs2Data    // rs2数据
-  ioEXU.EXUResult  := DontCare         // TODO: EXU计算结果
+  ioEXU.EXUResult  := EXUResult        // EXU计算结果
 }
