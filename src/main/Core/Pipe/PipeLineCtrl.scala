@@ -8,6 +8,7 @@ import Core.Pipe.module._
 import Core.PCU.module._
 import Core.IFU.module._
 import Core.IDU.module._
+import Core.EXU.module._
 
 // pipe控制器
 class PipeLineCtrl extends Module {
@@ -17,6 +18,8 @@ class PipeLineCtrl extends Module {
   val ioIF_IDPipeCtrl = IO(Flipped(new PipeRegCtrlBundle())) // IF_ID级间寄存器控制信号
   val ioIDUCtrl       = IO(Flipped(new IDUCtrlBundle))       // IDU流水控制信号
   val ioID_EXPipeCtrl = IO(Flipped(new PipeRegCtrlBundle())) // ID_EX级间寄存器控制信号
+  val ioEXUCtrl       = IO(Flipped(new EXUCtrlBundle))       // EXU流水控制信号
+  val ioEX_WBPipeCtrl = IO(Flipped(new PipeRegCtrlBundle())) // EX_WB级间寄存器控制信号
 
   val stallCode = WireDefault("b00000".U(5.W)) // 暂停码
   val flushCode = WireDefault("b00000".U(5.W)) // 冲刷码
@@ -28,24 +31,30 @@ class PipeLineCtrl extends Module {
   ioPCUCtrl.pipe.flush := DontCare
   ioIFUCtrl.pipe.flush := DontCare
   ioIDUCtrl.pipe.flush := DontCare
+  ioEXUCtrl.pipe.flush := DontCare
 
   ioPCUCtrl.pipe.stall := DontCare
   ioIFUCtrl.pipe.stall := DontCare
   ioIDUCtrl.pipe.stall := DontCare
+  ioEXUCtrl.pipe.stall := DontCare
 
   ioPC_IFPipeCtrl.flush := DontCare
   ioIF_IDPipeCtrl.flush := DontCare
   ioID_EXPipeCtrl.flush := DontCare
+  ioEX_WBPipeCtrl.flush := DontCare
 
   ioIF_IDPipeCtrl.stallNext := DontCare
   ioPC_IFPipeCtrl.stallNext := DontCare
   ioID_EXPipeCtrl.stallNext := DontCare
+  ioEX_WBPipeCtrl.stallNext := DontCare
 
   ioIF_IDPipeCtrl.stallPrev := DontCare
   ioPC_IFPipeCtrl.stallPrev := DontCare
   ioID_EXPipeCtrl.stallPrev := DontCare
+  ioEX_WBPipeCtrl.stallPrev := DontCare
 
   ioPC_IFPipeCtrl.valid := ioPCUCtrl.pipe.valid // PCU数据有效信号
   ioIF_IDPipeCtrl.valid := ioIFUCtrl.pipe.valid // IFU数据有效信号
   ioID_EXPipeCtrl.valid := ioIDUCtrl.pipe.valid // IDU数据有效信号
+  ioEX_WBPipeCtrl.valid := ioEXUCtrl.pipe.valid // EXU数据有效信号
 }

@@ -24,13 +24,13 @@ class IDU extends Module {
   val rs1En :: rs2En :: rdEn :: op1Type :: op2Type :: aluCtrl :: immType :: branchCtrl :: mulCtrl :: divCtrl :: memCtrl :: csrCtrl :: excType :: Nil =
     ListLookup(inst, ALL.defaultList, ALL.instList)
 
-  val rs1Data = Mux(ioIDUForwarding.rs1.needPass, ioIDUForwarding.rs1.data, ioIDUForwarding.rs1.data) // 通用寄存器数据
-  val rs2Data = Mux(ioIDUForwarding.rs2.needPass, ioIDUForwarding.rs2.data, ioIDUForwarding.rs2.data) // 通用寄存器数据
+  val rs1Data = Mux(ioIDUForwarding.rs1.needPass, ioIDUForwarding.rs1.data, ioRegIDU.rs1.data) // 通用寄存器数据
+  val rs2Data = Mux(ioIDUForwarding.rs2.needPass, ioIDUForwarding.rs2.data, ioRegIDU.rs2.data) // 通用寄存器数据
 
-  val csrData    = Mux(ioIDUForwarding.csr.needPass, ioIDUForwarding.csr.data, ioIDUForwarding.csr.data) // csr寄存器数据
-  val csrAddr    = inst(31, 20)                                                                          // csr寄存器地址
-  val csrWriteEn = csrCtrl =/= csr.NOP                                                                   // csr寄存器写使能
-  val csrReadEn  = csrCtrl =/= csr.NOP                                                                   // csr寄存器读使能
+  val csrData    = Mux(ioIDUForwarding.csr.needPass, ioIDUForwarding.csr.data, ioCSRIDU.csr.data) // csr寄存器数据
+  val csrAddr    = inst(31, 20)                                                                   // csr寄存器地址
+  val csrWriteEn = csrCtrl =/= csr.NOP                                                            // csr寄存器写使能
+  val csrReadEn  = csrCtrl =/= csr.NOP                                                            // csr寄存器读使能
 
   val rdAddr  = inst(11, 7)  // 目的寄存器地址
   val rs1Addr = inst(19, 15) // 源寄存器地址
@@ -71,8 +71,9 @@ class IDU extends Module {
   ioRegIDU.rs2.addr := rs2Addr // 地址
 
   // csr寄存器IO
-  ioCSRIDU.csr.en   := csrReadEn
-  ioCSRIDU.csr.addr := csrAddr
+  ioCSRIDU.csr.en   := csrReadEn // CSR使能
+  ioCSRIDU.csr.addr := csrAddr   // CSR地址
+  ioCSRIDU.excType  := excType   // 异常类型
 
   // 前递IO
   ioIDUForwarding.rs1.en   := rs1En     // 使能
@@ -87,21 +88,23 @@ class IDU extends Module {
   ioCtrl.stallReq   := ioIDUForwarding.needStall // 前递需要等待
 
   // IDU IO
-  ioIDU.pc         := ioIFU.pc   // PC值
-  ioIDU.rdEn       := rdEn       // 目的寄存器使能
-  ioIDU.rdAddr     := rdAddr     // 目的寄存器地址
-  ioIDU.rs1Data    := rs1Data    // 源寄存器1数据
-  ioIDU.rs2Data    := rs2Data    // 源寄存器2数据
-  ioIDU.op1Type    := op1Type    // 操作数1类型
-  ioIDU.op2Type    := op2Type    // 操作数2类型
-  ioIDU.immData    := immData    // 立即数
-  ioIDU.csrAddr    := csrAddr    // csr地址
-  ioIDU.csrData    := csrData    // csr数据
-  ioIDU.csrWriteEn := csrWriteEn // csr写使能
-  ioIDU.aluCtrl    := aluCtrl    // alu控制信号
-  ioIDU.mulCtrl    := mulCtrl    // mul控制信号
-  ioIDU.divCtrl    := divCtrl    // div控制信号
-  ioIDU.branchCtrl := branchCtrl // 分支控制信号
-  ioIDU.memCtrl    := memCtrl    // 访存控制信号
-  ioIDU.csrCtrl    := csrCtrl    // csr控制信号
+  ioIDU.pc         := ioIFU.pc            // PC值
+  ioIDU.rdEn       := rdEn                // 目的寄存器使能
+  ioIDU.rdAddr     := rdAddr              // 目的寄存器地址
+  ioIDU.rs1Data    := rs1Data             // 源寄存器1数据
+  ioIDU.rs2Data    := rs2Data             // 源寄存器2数据
+  ioIDU.op1Type    := op1Type             // 操作数1类型
+  ioIDU.op2Type    := op2Type             // 操作数2类型
+  ioIDU.immData    := immData             // 立即数
+  ioIDU.csrAddr    := csrAddr             // csr地址
+  ioIDU.csrData    := csrData             // csr数据
+  ioIDU.csrWriteEn := csrWriteEn          // csr写使能
+  ioIDU.aluCtrl    := aluCtrl             // alu控制信号
+  ioIDU.mulCtrl    := mulCtrl             // mul控制信号
+  ioIDU.divCtrl    := divCtrl             // div控制信号
+  ioIDU.branchCtrl := branchCtrl          // 分支控制信号
+  ioIDU.memCtrl    := memCtrl             // 访存控制信号
+  ioIDU.csrCtrl    := csrCtrl             // csr控制信号
+  ioIDU.excType    := excType             // exc类型
+  ioIDU.preFlushPC := ioCSRIDU.preFlushPC // 预冲刷地址
 }
