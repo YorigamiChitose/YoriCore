@@ -13,10 +13,10 @@ class IDU extends Module {
   val ioCtrl          = IO(new IDUCtrlBundle())                // 控制信号
   val ioIDU           = IO(new IDUStageBundle())               // 下级流水信号
   val ioIFU           = IO(Flipped(new IFUStageBundle))        // 上级流水信号
-  val ioValid         = IO(Input(Bool()))                      // 上级数据有效信号
   val ioRegIDU        = IO(Flipped(new RegIDUBundle()))        // IDU - Reg寄存器 接口
   val ioCSRIDU        = IO(Flipped(new CSRIDUBundle()))        // IDU - CSR寄存器 接口
   val ioIDUForwarding = IO(Flipped(new IDUForwardingBundle())) // IDU - 前递 接口
+  val ioValid         = IO(Input(Bool()))                      // 上级数据有效信号
 
   val inst = Mux(ioValid, ioIFU.inst, 0.U) // 指令
 
