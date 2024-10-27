@@ -14,6 +14,7 @@ class EXU extends Module {
   val ioEXU           = IO(new EXUStageBundle())               // 下级流水信号
   val ioIDU           = IO(Flipped(new IDUStageBundle))        // 上级流水信号
   val ioEXUForwarding = IO(Flipped(new EXUForwardingBundle())) // EXU - 前递 接口
+  val ioDMem          = IO(Flipped(new DMemBundle))            // DMem 接口
   val ioValid         = IO(Input(Bool()))                      // 上级数据有效信号
 
   // 操作数1
@@ -40,47 +41,53 @@ class EXU extends Module {
   // ALU
   val ALU       = Module(new ALU()) // ALU模块
   val ALUResult = ALU.ioALU.result  // ALU结果
-  ALU.ioALU.aluCtrl := ioIDU.aluCtrl // ALU控制信号
-  ALU.ioALU.op1     := operator1     // 操作数1
-  ALU.ioALU.op2     := operator2     // 操作数2
+  ALU.ioALU.aluCtrl := Mux(ioValid, ioIDU.aluCtrl, alu.NOP) // ALU控制信号
+  ALU.ioALU.op1     := operator1                            // 操作数1
+  ALU.ioALU.op2     := operator2                            // 操作数2
 
   // Branch
   val Branch          = Module(new Branch())            // 分支模块
   val isBranchSuccess = Branch.ioBranch.isBranchSuccess // 分支成功
   val branchPC        = Branch.ioBranch.branchPC        // 分支目的地址
-  Branch.ioBranch.branchCtrl := ioIDU.branchCtrl // 分支控制信号
-  Branch.ioBranch.rs1Data    := ioEXU.rs1Data    // rs1数据
-  Branch.ioBranch.rs2Data    := ioEXU.rs2Data    // rs2数据
-  Branch.ioBranch.pc         := ioIDU.pc         // PC值
-  Branch.ioBranch.offset     := ioIDU.immData    // 跳转偏移
+  Branch.ioBranch.branchCtrl := Mux(ioValid, ioIDU.branchCtrl, alu.NOP) // 分支控制信号
+  Branch.ioBranch.rs1Data    := ioEXU.rs1Data                           // rs1数据
+  Branch.ioBranch.rs2Data    := ioEXU.rs2Data                           // rs2数据
+  Branch.ioBranch.pc         := ioIDU.pc                                // PC值
+  Branch.ioBranch.offset     := ioIDU.immData                           // 跳转偏移
 
   // CSR
   val CSR       = Module(new CSR()) // CSR模块
   val CSRResult = CSR.ioCSR.result  // CSR结果
-  CSR.ioCSR.csrCtrl := ioIDU.csrCtrl // CSR控制信号
-  CSR.ioCSR.rs1     := operator1     // rs1数据
-  CSR.ioCSR.zimm    := operator2     // 立即数
-  CSR.ioCSR.csrData := ioIDU.csrData // CSR数据
+  CSR.ioCSR.csrCtrl := Mux(ioValid, ioIDU.csrCtrl, alu.NOP) // CSR控制信号
+  CSR.ioCSR.rs1     := operator1                            // rs1数据
+  CSR.ioCSR.zimm    := operator2                            // 立即数
+  CSR.ioCSR.csrData := ioIDU.csrData                        // CSR数据
 
   // DIV
   val DIV       = Module(new DIV()) // DIV模块
   val DIVResult = DIV.ioDIV.result  // DIV结果
   val DIVReady  = DIV.ioDIV.ready   // DIV准备完成
-  DIV.ioDIV.divCtrl := ioIDU.divCtrl     // DIV控制信号
-  DIV.ioDIV.op1     := operator1         // 操作数1
-  DIV.ioDIV.op2     := operator2         // 操作数2
-  DIV.ioDIV.flush   := ioCtrl.pipe.flush // 冲刷
+  DIV.ioDIV.divCtrl := Mux(ioValid, ioIDU.divCtrl, alu.NOP) // DIV控制信号
+  DIV.ioDIV.op1     := operator1                            // 操作数1
+  DIV.ioDIV.op2     := operator2                            // 操作数2
+  DIV.ioDIV.flush   := ioCtrl.pipe.flush                    // 冲刷
 
   // MLU
   val MUL       = Module(new MUL()) // MUL模块
   val MULResult = MUL.ioMUL.result  // MUL结果
   val MULReady  = MUL.ioMUL.ready   // MUL准备完成
-  MUL.ioMUL.mulCtrl := ioIDU.mulCtrl     // MUL控制信号
-  MUL.ioMUL.op1     := operator1         // 操作数1
-  MUL.ioMUL.op2     := operator2         // 操作数2
-  MUL.ioMUL.flush   := ioCtrl.pipe.flush // 冲刷
+  MUL.ioMUL.mulCtrl := Mux(ioValid, ioIDU.mulCtrl, alu.NOP) // MUL控制信号
+  MUL.ioMUL.op1     := operator1                            // 操作数1
+  MUL.ioMUL.op2     := operator2                            // 操作数2
+  MUL.ioMUL.flush   := ioCtrl.pipe.flush                    // 冲刷
 
-  // TODO: LSU
+  // LSU
+  val LSU       = Module(new LSU)   // LSU模块
+  val LSUResult = LSU.ioLSU.dataOut // LSU结果
+  val LSUReady  = LSU.ioLSU.ready   // LSU准备完成
+  LSU.ioLSU.memCtrl := ioIDU.memCtrl // LSU控制信号
+  LSU.ioLSU.addr    := ALUResult     // 地址计算结果
+  LSU.ioLSU.dataIn  := ioEXU.rs2Data // 保存数据
 
   // 运算结果
   val EXUResult = MuxCase(
@@ -89,7 +96,8 @@ class EXU extends Module {
       (ioIDU.aluCtrl =/= alu.NOP) -> ALUResult,
       (ioIDU.mulCtrl =/= mul.NOP) -> MULResult,
       (ioIDU.divCtrl =/= div.NOP) -> DIVResult,
-      (ioIDU.csrCtrl =/= csr.NOP) -> ioIDU.csrData // TODO: LSU
+      (ioIDU.csrCtrl =/= csr.NOP) -> ioIDU.csrData, // 存入通用寄存器
+      (ioIDU.memCtrl =/= mem.NOP) -> LSUResult
     )
   )
 
@@ -112,10 +120,11 @@ class EXU extends Module {
       (ioIDU.branchCtrl =/= branch.NOP) -> true.B,
       (ioIDU.csrCtrl =/= csr.NOP)       -> true.B,
       (ioIDU.divCtrl =/= div.NOP)       -> DIVReady,
-      (ioIDU.memCtrl =/= mem.NOP)       -> false.B, // TODO: LSU
+      (ioIDU.memCtrl =/= mem.NOP)       -> LSUReady,
       (ioIDU.mulCtrl =/= mul.NOP)       -> MULReady
     )
   )
+  ioCtrl.busy       := (ioIDU.mulCtrl =/= mul.NOP) && !LSUReady
 
   // 前递IO
   ioEXUForwarding.isLoad   := (ioIDU.memCtrl === mem.LB) ||
@@ -123,19 +132,22 @@ class EXU extends Module {
     (ioIDU.memCtrl === mem.LH) ||
     (ioIDU.memCtrl === mem.LHU) ||
     (ioIDU.memCtrl === mem.LW)
-  ioEXUForwarding.isMD     := (ioIDU.divCtrl =/= div.NOP) || (ioIDU.mulCtrl =/= mul.NOP) // 当前为乘除任务
-  ioEXUForwarding.rd.en    := ioIDU.rdEn                                                 // 目的寄存器使能
-  ioEXUForwarding.rd.addr  := ioIDU.rdAddr                                               // 目的寄存器地址
-  ioEXUForwarding.rd.data  := EXUResult                                                  // 目的寄存器数据
-  ioEXUForwarding.csr.en   := ioIDU.csrWriteEn                                           // csr使能
-  ioEXUForwarding.csr.addr := ioIDU.csrAddr                                              // csr地址
-  ioEXUForwarding.csr.data := CSRResult                                                  // csr数据
+  ioEXUForwarding.isMD     := false.B          // TODO: (ioIDU.divCtrl =/= div.NOP) || (ioIDU.mulCtrl =/= mul.NOP) // 当前为乘除任务
+  ioEXUForwarding.rd.en    := ioIDU.rdEn       // 目的寄存器使能
+  ioEXUForwarding.rd.addr  := ioIDU.rdAddr     // 目的寄存器地址
+  ioEXUForwarding.rd.data  := EXUResult        // 目的寄存器数据
+  ioEXUForwarding.csr.en   := ioIDU.csrWriteEn // csr使能
+  ioEXUForwarding.csr.addr := ioIDU.csrAddr    // csr地址
+  ioEXUForwarding.csr.data := CSRResult        // csr数据
+
+  // DMem IO
+  ioDMem <> LSU.ioDMem
 
   // EXU IO
   ioEXU.pc         := ioIDU.pc         // PC值
   ioEXU.rdEn       := ioIDU.rdEn       // 目的寄存器使能
   ioEXU.rdAddr     := ioIDU.rdAddr     // 目的寄存器地址
-  ioEXU.csrResult  := CSRResult        // csr计算结果
+  ioEXU.csrResult  := CSRResult        // csr计算结果 存入CSR
   ioEXU.csrAddr    := ioIDU.csrAddr    // csr地址
   ioEXU.csrWriteEn := ioIDU.csrWriteEn // csr写使能
   ioEXU.rs1Data    := ioIDU.rs1Data    // rs1数据
