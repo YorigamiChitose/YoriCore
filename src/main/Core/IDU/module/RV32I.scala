@@ -112,7 +112,7 @@ object RV32I {
     INST.CSRRWI  -> List(rs1.NOP, rs2.NOP, rd.EN, op1.NOP, op2.IMM, alu.NOP, imm.ZIMM, branch.NOP, mul.NOP, div.NOP, mem.NOP, csr.RWI, exc.NOP),
     INST.CSRRSI  -> List(rs1.NOP, rs2.NOP, rd.EN, op1.NOP, op2.IMM, alu.NOP, imm.ZIMM, branch.NOP, mul.NOP, div.NOP, mem.NOP, csr.RSI, exc.NOP),
     INST.CSRRCI  -> List(rs1.NOP, rs2.NOP, rd.EN, op1.NOP, op2.IMM, alu.NOP, imm.ZIMM, branch.NOP, mul.NOP, div.NOP, mem.NOP, csr.RCI, exc.NOP),
-    // 存取
+    // 存取 // 借用ALU计算
     INST.LB      -> List(rs1.EN, rs2.NOP, rd.EN, op1.RS1, op2.IMM, alu.ADD, imm.I, branch.NOP, mul.NOP, div.NOP, mem.LB, csr.NOP, exc.NOP),
     INST.LH      -> List(rs1.EN, rs2.NOP, rd.EN, op1.RS1, op2.IMM, alu.ADD, imm.I, branch.NOP, mul.NOP, div.NOP, mem.LH, csr.NOP, exc.NOP),
     INST.LBU     -> List(rs1.EN, rs2.NOP, rd.EN, op1.RS1, op2.IMM, alu.ADD, imm.I, branch.NOP, mul.NOP, div.NOP, mem.LBU, csr.NOP, exc.NOP),

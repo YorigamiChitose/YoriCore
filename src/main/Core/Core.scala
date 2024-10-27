@@ -65,6 +65,9 @@ class Core extends Module {
   val ioIMem = IO(Flipped(new IMemBundle))
   IFU.ioIMem <> ioIMem
 
+  val ioDMem = IO(Flipped(new DMemBundle))
+  EXU.ioDMem <> ioDMem
+
   val ioRegWBU = IO(new RegWBUBundle)
   regFile.ioRegWBU <> ioRegWBU
 
