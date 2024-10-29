@@ -153,4 +153,5 @@ class EXU extends Module {
   ioEXU.rs1Data    := ioIDU.rs1Data    // rs1数据
   ioEXU.rs2Data    := ioIDU.rs2Data    // rs2数据
   ioEXU.EXUResult  := EXUResult        // EXU计算结果
+  ioEXU.excType    := ioIDU.excType    // 异常类型
 }
