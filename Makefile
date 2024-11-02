@@ -32,7 +32,8 @@ verilator: $(SIM_SRC_PATH) $(CHISEL_BUILD_VSRC)
 		--exe $(SIM_SRC_PATH) \
 		-Mdir $(SIM_BUILD_DIR) \
 		-top $(TOP_MODULE) \
-		-CFLAGS $(SIM_CFLAG)
+		-CFLAGS $(SIM_CFLAG) \
+		--trace
 	@make -C $(SIM_BUILD_DIR) -f V$(TOP_MODULE).mk
 
 run:
