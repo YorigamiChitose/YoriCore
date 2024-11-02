@@ -2,8 +2,7 @@
 /*/
 
 !/src/
-!/csrc/
-!/vsrc/
+!/sim/
 !/.github/
 
 !/Makefile
