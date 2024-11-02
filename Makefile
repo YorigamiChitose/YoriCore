@@ -1,21 +1,45 @@
+# Top
 TOP_DIR   = $(PWD)
 BUILD_DIR = $(TOP_DIR)/build
 PRJ = playground
+TOP_MODULE = Core
 
 # Chisel Config
 CHISEL_BUILD_DIR      = $(BUILD_DIR)/chisel
-CHISEL_DIR            = $(TOP_DIR)/$(PRJ)
-CHISEL_BUILD_TOP_VSRC = $(CHISEL_BUILD_DIR)/$(TOP_NAME).sv
-CHISEL_BUILD_VSRC     = $(foreach dir,$(CHISEL_BUILD_DIR),$(wildcard $(dir)/*.v)) $(foreach dir,$(CHISEL_BUILD_DIR),$(wildcard $(dir)/*.sv))
+CHISEL_BUILD_TOP_VSRC = $(CHISEL_BUILD_DIR)/$(TOP_MODULE).sv
+CHISEL_BUILD_VSRC = $(wildcard $(CHISEL_BUILD_DIR)/*.sv)
+CHISEL_DIR            = $(TOP_DIR)/src
 CHISEL_MAIN_DIR       = $(CHISEL_DIR)/main
 CHISEL_TEST_DIR       = $(CHISEL_DIR)/test
-CHISEL_SRC_PATH       = $(foreach dir, $(shell find $(CHISEL_MAIN_DIR) -maxdepth 3 -type d), $(wildcard $(dir)/*.scala))
-CHISEL_TEST_DIR       = $(TOP_DIR)/test_run_dir
+CHISEL_SRC_PATH       = $(foreach dir, $(shell find $(CHISEL_MAIN_DIR) -maxdepth 5 -type d), $(wildcard $(dir)/*.scala))
 CHISEL_TOOL           = Tools.build
+
+# Verilator
+SIM_DIR           = $(TOP_DIR)/sim
+SIM_BUILD_DIR     = $(BUILD_DIR)/sim
+SIM_TARGET     = $(SIM_BUILD_DIR)/VCore
+SIM_SRC_DIR       = $(SIM_DIR)/src
+SIM_INC_DIR       = $(SIM_DIR)/inc
+SIM_SRC_PATH       = $(foreach dir, $(shell find $(SIM_SRC_DIR) -maxdepth 5 -type d), $(wildcard $(dir)/*.cpp))
+SIM_FLAG = 
+SIM_CFLAG = "-I$(SIM_INC_DIR)"
 
 verilog: $(CHISEL_BUILD_TOP_VSRC)
 
-$(CHISEL_BUILD_TOP_VSRC): $(CHISEL_MAIN_PATH)
+verilator: $(SIM_SRC_PATH) $(CHISEL_BUILD_VSRC)
+	@verilator \
+		--cc $(CHISEL_BUILD_VSRC) \
+		--exe $(SIM_SRC_PATH) \
+		-Mdir $(SIM_BUILD_DIR) \
+		-top $(TOP_MODULE) \
+		-CFLAGS $(SIM_CFLAG)
+	@make -C $(SIM_BUILD_DIR) -f V$(TOP_MODULE).mk
+
+run:
+	@$(SIM_TARGET)
+
+
+$(CHISEL_BUILD_TOP_VSRC): $(CHISEL_SRC_PATH)
 	@echo --- verilog start  ---
 	@mkdir -p $(CHISEL_BUILD_DIR)
 	mill -i $(PRJ).runMain $(CHISEL_TOOL) --split-verilog -td $(CHISEL_BUILD_DIR)
@@ -35,6 +59,12 @@ checkformat:
 
 clean:
 	rm -rf $(BUILD_DIR)
+
+clean-c:
+	rm -rf $(CHISEL_BUILD_DIR)
+
+clean-s:
+	rm -rf $(SIM_BUILD_DIR)
 
 clean-mill:
 	mill clean
