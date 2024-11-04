@@ -6,7 +6,7 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 
 import Core.PCU._
-import Core.Config.Config
+import Tools.Config.Config
 
 class PCUTest extends AnyFreeSpec with Matchers {
   "PCU test" in {

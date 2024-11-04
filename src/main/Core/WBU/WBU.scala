@@ -3,7 +3,7 @@ package Core.WBU
 import chisel3._
 import chisel3.util._
 
-import Core.Config.Config
+import Tools.Config.Config
 import Core.IDU.module._
 import Core.EXU.module._
 import Core.WBU.module._

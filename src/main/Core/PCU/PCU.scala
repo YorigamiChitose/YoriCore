@@ -3,7 +3,7 @@ package Core.PCU
 import chisel3._
 import chisel3.util._
 
-import Core.Config.Config
+import Tools.Config.Config
 import Core.PCU.module._
 
 // PCU 决定PC值

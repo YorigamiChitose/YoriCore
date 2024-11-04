@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util._
 
 import Core.IDU.module._
-import Core.Config.Config
+import Tools.Config.Config
 
 class DIVBundle extends Bundle {
   val divCtrl = Input(UInt(div.WIDTH.W))         // 除法器控制信号

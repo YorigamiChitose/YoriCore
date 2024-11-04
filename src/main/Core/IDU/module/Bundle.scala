@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util._
 
 import Core.Pipe.module._
-import Core.Config.Config
+import Tools.Config.Config
 
 class IDUCtrlBundle extends Bundle {
   val stallReq = Output(Bool())       // 停止请求
