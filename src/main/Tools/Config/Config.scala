@@ -1,4 +1,4 @@
-package Core.Config
+package Tools.Config
 
 import chisel3._
 import chisel3.util._

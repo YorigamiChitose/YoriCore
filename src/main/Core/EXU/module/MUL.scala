@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util._
 
 import Core.IDU.module._
-import Core.Config.Config
+import Tools.Config.Config
 
 class MULBundle extends Bundle {
   val mulCtrl = Input(UInt(mul.WIDTH.W))         // 乘法器控制信号

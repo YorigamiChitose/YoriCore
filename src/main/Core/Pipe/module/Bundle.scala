@@ -3,7 +3,7 @@ package Core.Pipe.module
 import chisel3._
 import chisel3.util._
 
-import Core.Config.Config
+import Tools.Config.Config
 
 // 级间流水寄存器控制信号IO (pipe控制器 <> 级间寄存器)
 class PipeRegCtrlBundle extends Bundle {

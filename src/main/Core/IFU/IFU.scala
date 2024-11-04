@@ -3,7 +3,7 @@ package Core.IFU
 import chisel3._
 import chisel3.util._
 
-import Core.Config.Config
+import Tools.Config.Config
 import Core.IFU.module._
 import Core.PCU.module._
 

@@ -3,7 +3,7 @@ package Core.EXU
 import chisel3._
 import chisel3.util._
 
-import Core.Config.Config
+import Tools.Config.Config
 import Core.Reg.module._
 import Core.EXU.module._
 import Core.IDU.module._

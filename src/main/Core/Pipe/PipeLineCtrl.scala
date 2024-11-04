@@ -3,7 +3,7 @@ package Core.Pipe
 import chisel3._
 import chisel3.util._
 
-import Core.Config.Config
+import Tools.Config.Config
 import Core.Pipe.module._
 import Core.PCU.module._
 import Core.IFU.module._
