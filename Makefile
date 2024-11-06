@@ -7,7 +7,7 @@ TOP_MODULE = Core
 # Chisel Config
 CHISEL_BUILD_DIR      = $(BUILD_DIR)/chisel
 CHISEL_BUILD_TOP_VSRC = $(CHISEL_BUILD_DIR)/$(TOP_MODULE).sv
-CHISEL_BUILD_VSRC = $(wildcard $(CHISEL_BUILD_DIR)/*.sv)
+CHISEL_BUILD_VSRC     = $(wildcard $(CHISEL_BUILD_DIR)/*.sv)
 CHISEL_DIR            = $(TOP_DIR)/src
 CHISEL_MAIN_DIR       = $(CHISEL_DIR)/main
 CHISEL_TEST_DIR       = $(CHISEL_DIR)/test
@@ -15,30 +15,35 @@ CHISEL_SRC_PATH       = $(foreach dir, $(shell find $(CHISEL_MAIN_DIR) -maxdepth
 CHISEL_TOOL           = Tools.build
 
 # Verilator
-SIM_DIR           = $(TOP_DIR)/sim
-SIM_BUILD_DIR     = $(BUILD_DIR)/sim
-SIM_TARGET     = $(SIM_BUILD_DIR)/VCore
-SIM_SRC_DIR       = $(SIM_DIR)/src
-SIM_INC_DIR       = $(SIM_DIR)/inc
-SIM_SRC_PATH       = $(foreach dir, $(shell find $(SIM_SRC_DIR) -maxdepth 5 -type d), $(wildcard $(dir)/*.cpp))
-SIM_FLAG = 
-SIM_CFLAG = "-I$(SIM_INC_DIR)"
+SIM_DIR       = $(TOP_DIR)/sim
+SIM_BUILD_DIR = $(BUILD_DIR)/sim
+SIM_TARGET    = $(SIM_BUILD_DIR)/V$(TOP_MODULE)
+SIM_SRC_DIR   = $(SIM_DIR)/src
+SIM_INC_DIR   = $(SIM_DIR)/inc
+SIM_SRC_PATH  = $(foreach dir, $(shell find $(SIM_SRC_DIR) -maxdepth 5 -type d), $(wildcard $(dir)/*.cpp))
+SIM_FLAG      = 
+SIM_CFLAG     = "-I$(SIM_INC_DIR) -g"
+SIM_CONFIG    = $(SIM_DIR)/verilator.vlt
 
 verilog: $(CHISEL_BUILD_TOP_VSRC)
 
-verilator: $(SIM_SRC_PATH) $(CHISEL_BUILD_VSRC)
+verilator: $(SIM_TARGET)
+
+$(SIM_TARGET): $(SIM_SRC_PATH) $(CHISEL_BUILD_TOP_VSRC)
 	@verilator \
-		--cc $(CHISEL_BUILD_VSRC) \
+		--cc $(SIM_CONFIG) $(CHISEL_BUILD_VSRC) \
 		--exe $(SIM_SRC_PATH) \
 		-Mdir $(SIM_BUILD_DIR) \
 		-top $(TOP_MODULE) \
 		-CFLAGS $(SIM_CFLAG) \
 		--trace
+	
+run: $(SIM_TARGET)
 	@make -C $(SIM_BUILD_DIR) -f V$(TOP_MODULE).mk
+	@cd $(SIM_BUILD_DIR) && $(SIM_TARGET)
 
-run:
-	@$(SIM_TARGET)
-
+wave:
+	@cd $(SIM_BUILD_DIR) && gtkwave ./wave.vcd
 
 $(CHISEL_BUILD_TOP_VSRC): $(CHISEL_SRC_PATH)
 	@echo --- verilog start  ---
