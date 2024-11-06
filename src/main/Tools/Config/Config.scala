@@ -31,4 +31,8 @@ object Config {
     val W    = 2 * H
     val D    = 2 * W
   }
+
+  object NPC {
+    val enable = true
+  }
 }
