@@ -4,6 +4,7 @@
 !/src/
 !/sim/
 !/.github/
+!/mkscript/
 
 !/Makefile
 !/.gitignore
@@ -11,3 +12,4 @@
 !/build.sc
 !/README.md
 !/.mill-version
+!/Kconfig
