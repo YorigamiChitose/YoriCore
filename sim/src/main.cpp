@@ -4,6 +4,7 @@
 #include <VCore_PipeStage_1.h>
 #include <VCore_PipeStage_2.h>
 #include <VCore_PipeStage_3.h>
+#include <autoconf.h>
 #include <iostream>
 #include <main.h>
 #include <verilated.h>
@@ -58,7 +59,6 @@ int main(void) {
     eval_verilator();
     vtop->clock = 0;
     eval_verilator();
-    dump_gpr();
   }
 
   tfp->close();

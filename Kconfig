@@ -1,0 +1,17 @@
+config FOO
+    bool "Enable Foo"
+    default y
+    help
+      This option enables the Foo feature.
+
+config BAR
+    string "Bar Value"
+    default "default_bar"
+    help
+      This option sets the value for Bar.
+
+config BAZ
+    int "Baz Value"
+    default 42
+    help
+      This option sets the value for Baz.
