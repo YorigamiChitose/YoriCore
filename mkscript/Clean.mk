@@ -7,7 +7,7 @@ clean-c:
 
 clean-s:
 	rm -rf $(SIM_BUILD_DIR)
-	rm -rf $(SIM_AUTOCONFIG_H) $(SIM_CONFIG)
+	rm -rf $(SIM_AUTOCONFIG_H)
 
 clean-mill:
 	mill clean
