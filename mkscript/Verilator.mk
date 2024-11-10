@@ -1,18 +1,19 @@
 .PHONY: verilator run
 
 # Verilator
-SIM_DIR           = $(TOP_DIR)/sim
-SIM_BUILD_DIR     = $(BUILD_DIR)/sim
-SIM_TARGET        = $(SIM_BUILD_DIR)/V$(TOP_MODULE)
-SIM_SRC_DIR       = $(SIM_DIR)/src
-SIM_INC_DIR       = $(SIM_DIR)/inc
-SIM_TOOL_DIR      = $(SIM_DIR)/tool
-SIM_SRC_PATH      = $(foreach dir, $(shell find $(SIM_SRC_DIR) -maxdepth 5 -type d), $(wildcard $(dir)/*.cpp))
-SIM_FLAG          = --error-limit 0
-SIM_CFLAG         = "-I$(SIM_INC_DIR) -g"
-SIM_CONFIG        = $(SIM_DIR)/verilator.vlt
-SIM_AUTOCONFIG_H  = $(SIM_INC_DIR)/autoconf/autoconf.h
-SIM_AUTOCONFIG_CONFIG  = $(TOP_DIR)/.config
+SIM_DIR               = $(TOP_DIR)/sim
+SIM_BUILD_DIR         = $(BUILD_DIR)/sim
+SIM_TARGET            = $(SIM_BUILD_DIR)/V$(TOP_MODULE)
+SIM_SRC_DIR           = $(SIM_DIR)/src
+SIM_INC_DIR           = $(SIM_DIR)/inc
+SIM_TOOL_DIR          = $(SIM_DIR)/tool
+SIM_SRC_PATH          = $(foreach dir, $(shell find $(SIM_SRC_DIR) -maxdepth 5 -type d), $(wildcard $(dir)/*.cpp))
+SIM_FLAG              = --error-limit 0
+SIM_CFLAGS            = "-I$(SIM_INC_DIR) -g $(shell ncurses6-config --cflags)"
+SIM_LDFLAGS           = "$(shell ncurses6-config --libs)"
+SIM_CONFIG            = $(SIM_DIR)/verilator.vlt
+SIM_AUTOCONFIG_H      = $(SIM_INC_DIR)/autoconf/autoconf.h
+SIM_AUTOCONFIG_CONFIG = $(TOP_DIR)/.config
 
 $(SIM_TARGET): $(SIM_SRC_PATH) $(CHISEL_BUILD_TOP_VSRC) $(SIM_AUTOCONFIG_H)
 	@echo "$(COLOR_R)--- verilator start  ---$(COLOR_NO)"
@@ -21,10 +22,11 @@ $(SIM_TARGET): $(SIM_SRC_PATH) $(CHISEL_BUILD_TOP_VSRC) $(SIM_AUTOCONFIG_H)
 		--exe $(SIM_SRC_PATH) \
 		-Mdir $(SIM_BUILD_DIR) \
 		-top $(TOP_MODULE) \
-		-CFLAGS $(SIM_CFLAG) \
+		-CFLAGS $(SIM_CFLAGS) \
+		-LDFLAGS $(SIM_LDFLAGS) \
 		--trace \
 		$(SIM_FLAG)
-	@make -C $(SIM_BUILD_DIR) -f V$(TOP_MODULE).mk -s
+	make -C $(SIM_BUILD_DIR) -f V$(TOP_MODULE).mk -s
 	@echo "$(COLOR_R)--- verilator finish ---$(COLOR_NO)"
 
 $(SIM_AUTOCONFIG_H): $(SIM_AUTOCONFIG_CONFIG)
@@ -33,7 +35,8 @@ $(SIM_AUTOCONFIG_H): $(SIM_AUTOCONFIG_CONFIG)
 	@echo "$(COLOR_R)--- generate autoconf finish ---$(COLOR_NO)"
 
 menuconfig:
-	@python3 /usr/lib/python3/dist-packages/menuconfig.py
+	python3 /usr/lib/python3/dist-packages/menuconfig.py
+	python3 /usr/lib/python3/dist-packages/genconfig.py --header-path $(SIM_AUTOCONFIG_H) --config-out $(SIM_AUTOCONFIG_CONFIG)
 
 verilator: $(SIM_TARGET)
 
