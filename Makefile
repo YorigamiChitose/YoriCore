@@ -1,7 +1,7 @@
 TOP_DIR   = $(PWD)
 BUILD_DIR = $(TOP_DIR)/build
 PRJ = playground
-TOP_MODULE = Core
+TOP_MODULE = Top
 
 COLOR_R  := \e[31m
 COLOR_G  := \e[32m

@@ -1,13 +1,13 @@
 #ifndef __VERILATOR_H__
 #define __VERILATOR_H__
 
-#include <VCore.h>
+#include <VTop.h>
 #include <verilated.h>
 #include <verilated_vcd_c.h>
 
 #include "autoconf/common.h"
 
-extern VCore *vtop;
+extern VTop *vtop;
 #ifdef CONFIG_WAVE
 extern VerilatedContext *contextp;
 extern VerilatedVcdC *tfp;
@@ -22,6 +22,7 @@ inline void eval_verilator(void) {
 }
 
 void init_verilator(void);
+void step_verilator(void);
 void exit_verilator(void);
 
 #endif

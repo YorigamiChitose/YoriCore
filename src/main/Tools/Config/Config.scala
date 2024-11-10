@@ -32,7 +32,7 @@ object Config {
     val D    = 2 * W
   }
 
-  object NPC {
+  object DPIC {
     val enable = true
   }
 }

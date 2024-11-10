@@ -5,7 +5,7 @@ import chisel3.util._
 
 import Tools.Config.Config
 import Core.Reg.module._
-import NPC._
+import DPIC._
 
 class RegFile extends Module {
   val ioRegIDU = IO(new RegIDUBundle())
@@ -21,7 +21,7 @@ class RegFile extends Module {
     reg(ioRegWBU.rd.addr) := ioRegWBU.rd.data
   }
 
-  if (Config.NPC.enable) {
+  if (Config.DPIC.enable) {
     val regFileTrace = Module(new RegFileTrace())
     regFileTrace.io.clock := clock
     regFileTrace.io.reset := reset
