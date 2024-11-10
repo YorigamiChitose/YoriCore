@@ -102,9 +102,9 @@ class EXU extends Module {
   )
 
   // Pipe控制
-  ioCtrl.stallReq := ((ioIDU.mulCtrl =/= mul.NOP) && !MULReady) ||
+  ioCtrl.stallReq   := ((ioIDU.mulCtrl =/= mul.NOP) && !MULReady) ||
     ((ioIDU.divCtrl =/= div.NOP) && !DIVReady) ||
-    (ioIDU.memCtrl =/= mem.NOP) // TODO: LSU
+    (ioIDU.memCtrl =/= mem.NOP) && !LSUReady
   ioCtrl.flushPC    := MuxCase(
     0.U(Config.Addr.Width.W),
     Seq(
@@ -121,7 +121,8 @@ class EXU extends Module {
       (ioIDU.csrCtrl =/= csr.NOP)       -> true.B,
       (ioIDU.divCtrl =/= div.NOP)       -> DIVReady,
       (ioIDU.memCtrl =/= mem.NOP)       -> LSUReady,
-      (ioIDU.mulCtrl =/= mul.NOP)       -> MULReady
+      (ioIDU.mulCtrl =/= mul.NOP)       -> MULReady,
+      (ioIDU.excType === exc.EBREAK)    -> true.B // for npc
     )
   )
   ioCtrl.busy       := (ioIDU.mulCtrl =/= mul.NOP) && !LSUReady
