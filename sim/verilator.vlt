@@ -1,13 +1,14 @@
 `verilator_config
 
 // PC_IF
-// public -module "PipeStage" -var "ioValid"
+public -module "PipeStage" -var "ioValid"
 
 // IF_ID
-// public -module "PipeStage_1" -var "ioValid"
+public -module "PipeStage_1" -var "ioValid"
 
 // ID_EX
-// public -module "PipeStage_2" -var "ioValid"
+public -module "PipeStage_2" -var "ioValid"
 
 // EX_WB
-// public -module "PipeStage_3" -var "ioValid"
+public -module "PipeStage_3" -var "ioValid"
+public -module "PipeStage_3" -var "ioNextStage_excType"

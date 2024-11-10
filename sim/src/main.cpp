@@ -6,6 +6,8 @@
 int main(void) {
   init_all();
 
+  vtop->ioDMem_ready = true;
+
   int ch = '\0';
   bool running = true;
   while (running) {
@@ -28,7 +30,12 @@ int main(void) {
     default:
       break;
     }
+    refresh_cpu_status();
     update_tui();
+
+    if (cpu_status.EX_WB_excType == 1) {
+      break;
+    }
   }
 
   exit_all();
