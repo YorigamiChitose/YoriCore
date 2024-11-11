@@ -1,4 +1,4 @@
-module DpicIMem # (
+module SimIMem # (
   parameter integer INST_WIDTH = 32,
   parameter integer ADDR_WIDTH = 32
 )(

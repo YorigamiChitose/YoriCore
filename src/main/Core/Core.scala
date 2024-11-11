@@ -17,6 +17,8 @@ import Core.WBU._
 import Core.WBU.module._
 import Core.Reg._
 import Core.Reg.module._
+import Tools.Config.Config
+import Sim._
 
 class Core extends Module {
   val PCU   = Module(new PCU)
@@ -77,4 +79,12 @@ class Core extends Module {
 
   val ioDMem = IO(Flipped(new DMemBundle))
   EXU.ioDMem <> ioDMem
+
+  val SimInfo = if (Config.DPIC.enable) Some(Module(new SimInfo)) else None
+  SimInfo.get.io.SI_PC_IF <> IFU.ioSI.getOrElse(DontCare)
+  SimInfo.get.io.SI_IF_ID <> IDU.ioSI.getOrElse(DontCare)
+  SimInfo.get.io.SI_ID_EX <> EXU.ioSI.getOrElse(DontCare)
+  SimInfo.get.io.SI_EX_WB <> WBU.ioSI.getOrElse(DontCare)
+  SimInfo.get.io.clock := clock
+  SimInfo.get.io.reset := reset
 }

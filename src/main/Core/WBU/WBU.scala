@@ -9,6 +9,7 @@ import Core.EXU.module._
 import Core.WBU.module._
 import Core.Pipe.module._
 import Core.Reg.module._
+import Sim._
 
 class WBU extends Module {
   val ioCtrl          = IO(new WBUCtrlBundle)                // 控制信号
@@ -40,4 +41,9 @@ class WBU extends Module {
   ioCSRWBU.pc       := ioEXU.pc         // 异常地址
 
   ioCtrl.pipe.valid := DontCare // 无下一阶段
+
+  // Sim
+  val ioSI = if (Config.DPIC.enable) Some(IO(Flipped(new Sim.SI_EX_WB))) else None
+  ioSI.get.ioValid := ioValid
+  ioSI.get.excType := ioEXU.excType
 }
