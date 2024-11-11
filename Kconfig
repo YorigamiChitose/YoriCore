@@ -1,4 +1,35 @@
 mainmenu "YoriCore Simulation Configuration Menu"
 
+menu "Debug"
 config WAVE
   bool "Generated waveform"
+endmenu
+
+menu "Tui Config"
+choice
+  prompt "Register matrix configuration"
+  default REG_MATRIX_4x8
+  help
+    Select the configuration for the register matrix.
+
+config REG_MATRIX_4x8
+  bool "4 rows x 8 columns"
+  help
+    Configure the register matrix with 4 rows and 8 columns.
+
+config REG_MATRIX_8x4
+  bool "8 rows x 4 columns"
+  help
+    Configure the register matrix with 8 rows and 4 columns.
+endchoice
+
+config REG_ROW
+  int
+  default 4 if REG_MATRIX_4x8
+  default 8 if REG_MATRIX_8x4
+
+config REG_COL
+  int
+  default 8 if REG_MATRIX_4x8
+  default 4 if REG_MATRIX_8x4
+endmenu

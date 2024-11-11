@@ -1,6 +1,7 @@
 #include <cstring>
 #include <ncurses.h>
 
+#include "autoconf/common.h"
 #include "isa/cpu.h"
 #include "isa/reg.h"
 
@@ -27,8 +28,11 @@ void init_tui(void) {
 
 WINDOW *reg_win;
 
+#define REG_WIN_W (CONFIG_REG_ROW * (8 + 2 + 4 + 1) + 2)
+#define REG_WIN_H (CONFIG_REG_COL + 2)
+
 void creat_reg_win(void) {
-  reg_win = newwin(8 + 2, 4 * (8 + 2 + 4) + 3 + 3, 0, 0);
+  reg_win = newwin(REG_WIN_H, REG_WIN_W, 0, 0);
 
   box(reg_win, 0, 0);
 
@@ -40,10 +44,10 @@ void creat_reg_win(void) {
 }
 
 void update_reg_win(void) {
-  for (int i = 0; i < 8; i++) {
-    for (int j = 0; j < 4; j++) {
-      mvwprintw(reg_win, i + 1, (j * 15) + 1, "%3s:0x%08X", regs[i * 4 + j],
-                cpu.gpr[i * 4 + j]);
+  for (int i = 0; i < CONFIG_REG_COL; i++) {
+    for (int j = 0; j < CONFIG_REG_ROW; j++) {
+      mvwprintw(reg_win, i + 1, (j * 15) + 1, "%3s:0x%08X",
+                regs[i * CONFIG_REG_ROW + j], cpu.gpr[i * CONFIG_REG_ROW + j]);
     }
   }
 }
