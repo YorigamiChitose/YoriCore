@@ -32,7 +32,7 @@ object Config {
     val D    = 2 * W
   }
 
-  object DPIC {
+  object Sim {
     val enable = true
   }
 }

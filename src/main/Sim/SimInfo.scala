@@ -4,12 +4,26 @@ import chisel3._
 import chisel3.util._
 
 import Core.IDU.module._
+import Tools.Config.Config
 
-class SI_PC_IF extends Bundle { val ioValid = Input(Bool()) }
-class SI_IF_ID extends Bundle { val ioValid = Input(Bool()) }
-class SI_ID_EX extends Bundle { val ioValid = Input(Bool()) }
+class SI_PC_IF extends Bundle {
+  val ioValid = Input(Bool())
+  val pc      = Input(UInt(Config.Addr.Width.W)) // PC值
+}
+class SI_IF_ID extends Bundle {
+  val ioValid = Input(Bool())
+  val pc      = Input(UInt(Config.Addr.Width.W)) // PC值
+  val inst    = Input(UInt(Config.Inst.Width.W)) // 指令
+}
+class SI_ID_EX extends Bundle {
+  val ioValid = Input(Bool())
+  val pc      = Input(UInt(Config.Addr.Width.W)) // PC值
+  val inst    = Input(UInt(Config.Inst.Width.W)) // 指令
+}
 class SI_EX_WB extends Bundle {
   val ioValid = Input(Bool())
+  val pc      = Input(UInt(Config.Addr.Width.W)) // PC值
+  val inst    = Input(UInt(Config.Inst.Width.W)) // 指令
   val excType = Input(UInt(exc.WIDTH.W))
 }
 

@@ -1,7 +1,18 @@
 `verilator_config
 
 public -module "SimInfo" -var "SI_PC_IF_ioValid"
+public -module "SimInfo" -var "SI_PC_IF_pc"
+public -module "SimInfo" -var "SI_PC_IF_inst"
+
 public -module "SimInfo" -var "SI_IF_ID_ioValid"
+public -module "SimInfo" -var "SI_IF_ID_pc"
+public -module "SimInfo" -var "SI_IF_ID_inst"
+
 public -module "SimInfo" -var "SI_ID_EX_ioValid"
+public -module "SimInfo" -var "SI_ID_EX_pc"
+public -module "SimInfo" -var "SI_ID_EX_inst"
+
 public -module "SimInfo" -var "SI_EX_WB_ioValid"
+public -module "SimInfo" -var "SI_EX_WB_pc"
+public -module "SimInfo" -var "SI_EX_WB_inst"
 public -module "SimInfo" -var "SI_EX_WB_excType"

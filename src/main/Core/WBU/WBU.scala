@@ -43,7 +43,11 @@ class WBU extends Module {
   ioCtrl.pipe.valid := DontCare // 无下一阶段
 
   // Sim
-  val ioSI = if (Config.DPIC.enable) Some(IO(Flipped(new Sim.SI_EX_WB))) else None
-  ioSI.get.ioValid := ioValid
-  ioSI.get.excType := ioEXU.excType
+  val ioSI = if (Config.Sim.enable) Some(IO(Flipped(new Sim.SI_EX_WB))) else None
+  if (Config.Sim.enable) {
+    ioSI.get.ioValid := ioValid
+    ioSI.get.pc      := ioEXU.pc
+    ioSI.get.inst    := ioEXU.inst.getOrElse(DontCare)
+    ioSI.get.excType := ioEXU.excType
+  }
 }

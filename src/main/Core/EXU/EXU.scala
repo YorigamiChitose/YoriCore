@@ -158,6 +158,11 @@ class EXU extends Module {
   ioEXU.excType    := ioIDU.excType    // 异常类型
 
   // Sim
-  val ioSI = if (Config.DPIC.enable) Some(IO(Flipped(new Sim.SI_ID_EX))) else None
-  ioSI.get.ioValid := ioValid
+  val ioSI = if (Config.Sim.enable) Some(IO(Flipped(new Sim.SI_ID_EX))) else None
+  if (Config.Sim.enable) {
+    ioEXU.inst.get   := ioIDU.inst.getOrElse(DontCare)
+    ioSI.get.ioValid := ioValid
+    ioSI.get.pc      := ioIDU.pc
+    ioSI.get.inst    := ioIDU.inst.getOrElse(DontCare)
+  }
 }

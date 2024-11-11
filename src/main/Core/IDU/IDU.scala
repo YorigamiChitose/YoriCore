@@ -110,6 +110,11 @@ class IDU extends Module {
   ioIDU.preFlushPC := ioCSRIDU.preFlushPC // 预冲刷地址
 
   // Sim
-  val ioSI = if (Config.DPIC.enable) Some(IO(Flipped(new Sim.SI_IF_ID))) else None
-  ioSI.get.ioValid := ioValid
+  val ioSI = if (Config.Sim.enable) Some(IO(Flipped(new Sim.SI_IF_ID))) else None
+  if (Config.Sim.enable) {
+    ioIDU.inst.get   := inst
+    ioSI.get.ioValid := ioValid
+    ioSI.get.pc      := ioIFU.pc
+    ioSI.get.inst    := ioIFU.inst
+  }
 }
