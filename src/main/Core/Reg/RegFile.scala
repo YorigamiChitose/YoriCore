@@ -5,7 +5,7 @@ import chisel3.util._
 
 import Tools.Config.Config
 import Core.Reg.module._
-import DPIC._
+import Sim._
 
 class RegFile extends Module {
   val ioRegIDU = IO(new RegIDUBundle())

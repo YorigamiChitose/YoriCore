@@ -8,6 +8,7 @@ import Core.Reg.module._
 import Core.EXU.module._
 import Core.IDU.module._
 import Core.Pipe.module._
+import Sim._
 
 class EXU extends Module {
   val ioCtrl          = IO(new EXUCtrlBundle())                // 控制信号
@@ -155,4 +156,8 @@ class EXU extends Module {
   ioEXU.rs2Data    := ioIDU.rs2Data    // rs2数据
   ioEXU.EXUResult  := EXUResult        // EXU计算结果
   ioEXU.excType    := ioIDU.excType    // 异常类型
+
+  // Sim
+  val ioSI = if (Config.DPIC.enable) Some(IO(Flipped(new Sim.SI_ID_EX))) else None
+  ioSI.get.ioValid := ioValid
 }
