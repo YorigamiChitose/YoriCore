@@ -21,7 +21,7 @@ class RegFile extends Module {
     reg(ioRegWBU.rd.addr) := ioRegWBU.rd.data
   }
 
-  if (Config.DPIC.enable) {
+  if (Config.Sim.enable) {
     val regFileTrace = Module(new RegFileTrace())
     regFileTrace.io.clock := clock
     regFileTrace.io.reset := reset

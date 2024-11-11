@@ -80,11 +80,13 @@ class Core extends Module {
   val ioDMem = IO(Flipped(new DMemBundle))
   EXU.ioDMem <> ioDMem
 
-  val SimInfo = if (Config.DPIC.enable) Some(Module(new SimInfo)) else None
-  SimInfo.get.io.SI_PC_IF <> IFU.ioSI.getOrElse(DontCare)
-  SimInfo.get.io.SI_IF_ID <> IDU.ioSI.getOrElse(DontCare)
-  SimInfo.get.io.SI_ID_EX <> EXU.ioSI.getOrElse(DontCare)
-  SimInfo.get.io.SI_EX_WB <> WBU.ioSI.getOrElse(DontCare)
-  SimInfo.get.io.clock := clock
-  SimInfo.get.io.reset := reset
+  val SimInfo = if (Config.Sim.enable) Some(Module(new SimInfo)) else None
+  if (Config.Sim.enable) {
+    SimInfo.get.io.SI_PC_IF <> IFU.ioSI.getOrElse(DontCare)
+    SimInfo.get.io.SI_IF_ID <> IDU.ioSI.getOrElse(DontCare)
+    SimInfo.get.io.SI_ID_EX <> EXU.ioSI.getOrElse(DontCare)
+    SimInfo.get.io.SI_EX_WB <> WBU.ioSI.getOrElse(DontCare)
+    SimInfo.get.io.clock := clock
+    SimInfo.get.io.reset := reset
+  }
 }

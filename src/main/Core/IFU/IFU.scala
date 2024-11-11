@@ -29,6 +29,9 @@ class IFU extends Module {
   ioIFU.inst := ioIMem.inst // 指令
 
   // Sim
-  val ioSI = if (Config.DPIC.enable) Some(IO(Flipped(new Sim.SI_PC_IF))) else None
-  ioSI.get.ioValid := ioValid
+  val ioSI = if (Config.Sim.enable) Some(IO(Flipped(new Sim.SI_PC_IF))) else None
+  if (Config.Sim.enable) {
+    ioSI.get.ioValid := ioValid
+    ioSI.get.pc      := ioPCU.pc
+  }
 }
