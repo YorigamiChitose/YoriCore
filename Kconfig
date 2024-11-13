@@ -5,6 +5,77 @@ config WAVE
   bool "Generated waveform"
 endmenu
 
+
+menu "Testing"
+config WATCH_POINT
+  bool "Enable watch point"
+  default y
+
+config WP_SIZE
+  depends on WATCH_POINT
+  hex "Watch point num"
+  default 0x20
+
+config WP_EXPR_SIZE
+  depends on WATCH_POINT
+  hex "Watch point expr size"
+  default 0x40
+
+config TRACE
+  bool "Enable tracer"
+  default y
+
+config ITRACE
+  depends on TRACE
+  bool "Enable instruction tracer"
+  default y
+
+config ITRACE_COND
+  depends on ITRACE
+  string "Only trace instructions when the condition is true"
+  default "true"
+  
+config ITRACE_BSIZE
+  depends on ITRACE
+  hex "Instruction tracer buffer size"
+  default 0x10
+
+config ITRACE_PRINT_MAXNUM
+  depends on ITRACE
+  hex "Instruction tracer max print num"
+  default 0x10
+
+config MTRACE
+  depends on TRACE
+  bool "Enable memory tracer"
+  default y
+
+config MTRACE_BSIZE
+  depends on MTRACE
+  hex "Memory tracer buffer size"
+  default 0x10
+
+config FTRACE
+  depends on TRACE
+  bool "Enable function tracer"
+  default y
+
+config FTRACE_NSIZE
+  depends on FTRACE
+  hex "Function tracer name buffer size"
+  default 0x40
+
+config FTRACE_ISIZE
+  depends on FTRACE
+  hex "Function tracer info buffer size"
+  default 0xE0
+
+config FTRACE_BSIZE
+  depends on FTRACE
+  hex "Function tracer buffer size"
+  default 0xF0
+endmenu
+
 menu "Tui Config"
 choice
   prompt "Register matrix configuration"
@@ -33,3 +104,5 @@ config REG_COL
   default 8 if REG_MATRIX_4x8
   default 4 if REG_MATRIX_8x4
 endmenu
+
+source "sim/src/memory/Kconfig"

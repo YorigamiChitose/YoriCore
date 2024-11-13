@@ -5,7 +5,7 @@
 #include <verilated.h>
 #include <verilated_vcd_c.h>
 
-#include "autoconf/common.h"
+#include "common.h"
 
 extern VTop *vtop;
 #ifdef CONFIG_WAVE
@@ -24,12 +24,19 @@ inline void eval_verilator(void) {
 struct CPU_STATUS {
   // PC - IF
   bool PC_IF_valid;
+  uint32_t PC_IF_pc;
   // IF - ID
   bool IF_ID_valid;
+  uint32_t IF_ID_pc;
+  uint32_t IF_ID_inst;
   // ID - EX
   bool ID_EX_valid;
+  uint32_t ID_EX_pc;
+  uint32_t ID_EX_inst;
   // EX - WB
   bool EX_WB_valid;
+  uint32_t EX_WB_pc;
+  uint32_t EX_WB_inst;
   int EX_WB_excType;
 };
 extern struct CPU_STATUS cpu_status;
