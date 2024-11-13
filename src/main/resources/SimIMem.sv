@@ -12,14 +12,6 @@ module SimIMem # (
 );
   import "DPI-C" function int dpic_imem_read(input int pc);
 
-  // always @(posedge clock) begin
-  //   if (reset) begin
-  //     ioIMem_inst <= 0;
-  //   end else if (ioIMem_valid) begin
-  //     ioIMem_inst <= dpic_imem_read(ioIMem_pc);
-  //   end
-  // end
-
   /* verilator lint_off LATCH */
   always @(*) begin
     if (reset) begin
@@ -30,6 +22,6 @@ module SimIMem # (
   end
   /* verilator lint_on LATCH */
 
-  assign ioIMem_busy = 1'b1; 
+  assign ioIMem_busy = 1'b0; 
   assign ioIMem_ready = 1'b1; 
 endmodule

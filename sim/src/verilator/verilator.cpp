@@ -1,4 +1,5 @@
 #include "verilator/verilator.h"
+#include "isa/isa.h"
 #include <VTop.h>
 #include <VTop_Core.h>
 #include <VTop_SimInfo.h>
@@ -6,6 +7,7 @@
 #include <verilated.h>
 #include <verilated_vcd_c.h>
 
+CPU_state cpu = {};
 VTop *vtop = NULL;
 #ifdef CONFIG_WAVE
 VerilatedContext *contextp = NULL;
@@ -45,9 +47,16 @@ struct CPU_STATUS cpu_status;
 
 void refresh_cpu_status(void) {
   cpu_status.PC_IF_valid = vtop->Top->core->SimInfo->SI_PC_IF_ioValid;
+  cpu_status.PC_IF_pc = vtop->Top->core->SimInfo->SI_PC_IF_pc;
   cpu_status.IF_ID_valid = vtop->Top->core->SimInfo->SI_IF_ID_ioValid;
+  cpu_status.IF_ID_pc = vtop->Top->core->SimInfo->SI_IF_ID_pc;
+  cpu_status.IF_ID_inst = vtop->Top->core->SimInfo->SI_IF_ID_inst;
   cpu_status.ID_EX_valid = vtop->Top->core->SimInfo->SI_ID_EX_ioValid;
+  cpu_status.ID_EX_pc = vtop->Top->core->SimInfo->SI_ID_EX_pc;
+  cpu_status.ID_EX_inst = vtop->Top->core->SimInfo->SI_ID_EX_inst;
   cpu_status.EX_WB_valid = vtop->Top->core->SimInfo->SI_EX_WB_ioValid;
+  cpu_status.EX_WB_pc = vtop->Top->core->SimInfo->SI_EX_WB_pc;
+  cpu_status.EX_WB_inst = vtop->Top->core->SimInfo->SI_EX_WB_inst;
   cpu_status.EX_WB_excType = vtop->Top->core->SimInfo->SI_EX_WB_excType;
 }
 
