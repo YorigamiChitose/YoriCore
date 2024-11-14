@@ -22,16 +22,10 @@ class MUL extends Module {
   val result = MuxCase(
     0.U(Config.Data.XLEN.W),
     Seq(
-      (ioMUL.mulCtrl === mul.MUL)    -> (ioMUL.op1.asUInt * ioMUL.op2.asUInt).asUInt, // 无符号乘法
-      (ioMUL.mulCtrl === mul.MULH)   -> (ioMUL.op1(Config.Data.XLEN - 1, Config.Data.XLEN / 2).asSInt * ioMUL
-        .op2(Config.Data.XLEN - 1, Config.Data.XLEN / 2)
-        .asSInt).asUInt, // 高位符号乘法
-      (ioMUL.mulCtrl === mul.MULHU)  -> (ioMUL.op1(Config.Data.XLEN - 1, Config.Data.XLEN / 2).asUInt * ioMUL
-        .op2(Config.Data.XLEN - 1, Config.Data.XLEN / 2)
-        .asUInt).asUInt, // 高位无符号乘法
-      (ioMUL.mulCtrl === mul.MULHSU) -> (ioMUL.op1(Config.Data.XLEN - 1, Config.Data.XLEN / 2).asSInt * ioMUL
-        .op2(Config.Data.XLEN - 1, Config.Data.XLEN / 2)
-        .asUInt).asUInt // 高位有符号乘无符号
+      (ioMUL.mulCtrl === mul.MUL)    -> (ioMUL.op1.asUInt * ioMUL.op2.asUInt).asUInt,                                                                                    // 无符号乘法
+      (ioMUL.mulCtrl === mul.MULH)   -> ((ioMUL.op1.asSInt.pad(Config.Data.XLEN * 2) * ioMUL.op2.asSInt.pad(Config.Data.XLEN * 2)).asSInt >> Config.Data.XLEN.U).asUInt, // 高位符号乘法
+      (ioMUL.mulCtrl === mul.MULHU)  -> ((ioMUL.op1.asUInt.pad(Config.Data.XLEN * 2) * ioMUL.op2.asUInt.pad(Config.Data.XLEN * 2)).asUInt >> Config.Data.XLEN.U).asUInt, // 高位无符号乘法
+      (ioMUL.mulCtrl === mul.MULHSU) -> ((ioMUL.op1.asSInt.pad(Config.Data.XLEN * 2) * ioMUL.op2.asUInt.pad(Config.Data.XLEN * 2)).asSInt >> Config.Data.XLEN.U).asUInt  // 高位有符号乘无符号
     )
   )
 
