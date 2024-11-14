@@ -32,6 +32,14 @@ object Config {
     val D    = 2 * W
   }
 
+  object Cache {
+    object SRAM {
+      val Width     = 128
+      val Depth     = 32
+      val AddrWidth = log2Ceil(Depth)
+    }
+  }
+
   object Sim {
     val enable = true
   }
