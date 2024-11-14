@@ -1,42 +1,16 @@
 TOP_DIR   = $(PWD)
 BUILD_DIR = $(TOP_DIR)/build
 PRJ = playground
+TOP_MODULE = Top
 
-# Chisel Config
-CHISEL_BUILD_DIR      = $(BUILD_DIR)/chisel
-CHISEL_DIR            = $(TOP_DIR)/$(PRJ)
-CHISEL_BUILD_TOP_VSRC = $(CHISEL_BUILD_DIR)/$(TOP_NAME).sv
-CHISEL_BUILD_VSRC     = $(foreach dir,$(CHISEL_BUILD_DIR),$(wildcard $(dir)/*.v)) $(foreach dir,$(CHISEL_BUILD_DIR),$(wildcard $(dir)/*.sv))
-CHISEL_MAIN_DIR       = $(CHISEL_DIR)/main
-CHISEL_TEST_DIR       = $(CHISEL_DIR)/test
-CHISEL_SRC_PATH       = $(foreach dir, $(shell find $(CHISEL_MAIN_DIR) -maxdepth 3 -type d), $(wildcard $(dir)/*.scala))
-CHISEL_TEST_DIR       = $(TOP_DIR)/test_run_dir
-CHISEL_TOOL           = Tools.build
+COLOR_R  := \e[31m
+COLOR_G  := \e[32m
+COLOR_Y  := \e[33m
+COLOR_B  := \e[34m
+COLOR_P  := \e[35m
+COLOR_NO := \e[0m
 
-verilog: $(CHISEL_BUILD_TOP_VSRC)
-
-$(CHISEL_BUILD_TOP_VSRC): $(CHISEL_MAIN_PATH)
-	@echo --- verilog start  ---
-	@mkdir -p $(CHISEL_BUILD_DIR)
-	mill -i $(PRJ).runMain $(CHISEL_TOOL) --split-verilog -td $(CHISEL_BUILD_DIR)
-	@echo --- verilog finish ---
-
-test:
-	mill -i $(PRJ).test
-
-help:
-	mill -i $(PRJ).runMain Elaborate --help
-
-reformat:
-	mill -i __.reformat
-
-checkformat:
-	mill -i __.checkFormat
-
-clean:
-	rm -rf $(BUILD_DIR)
-
-clean-mill:
-	mill clean
-
-.PHONY: test verilog help reformat checkformat clean
+include $(TOP_DIR)/mkscript/Chisel.mk
+include $(TOP_DIR)/mkscript/Verilator.mk
+include $(TOP_DIR)/mkscript/Clean.mk
+include $(TOP_DIR)/mkscript/Mill.mk

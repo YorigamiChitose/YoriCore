@@ -17,6 +17,8 @@ import Core.WBU._
 import Core.WBU.module._
 import Core.Reg._
 import Core.Reg.module._
+import Tools.Config.Config
+import Sim._
 
 class Core extends Module {
   val PCU   = Module(new PCU)
@@ -29,11 +31,11 @@ class Core extends Module {
   val EX_WB = Module(new PipeStage(new EXUStageBundle))
   val WBU   = Module(new WBU)
 
-  val regFile = Module(new RegFile)
-  val csrFile = Module(new CsrFile)
+  val regFile = Module(new RegFile) // 通用寄存器
+  val csrFile = Module(new CsrFile) // CSR寄存器
 
-  val pipeLineCtrl = Module(new PipeLineCtrl)
-  val forwording   = Module(new Forwarding)
+  val pipeLineCtrl = Module(new PipeLineCtrl) // 流水控制
+  val forwording   = Module(new Forwarding)   // 前递寄存器
 
   pipeLineCtrl.ioPCUCtrl <> PCU.ioCtrl // PCU - 流水控制器
   pipeLineCtrl.ioIFUCtrl <> IFU.ioCtrl // IFU - 流水控制器
@@ -77,4 +79,14 @@ class Core extends Module {
 
   val ioDMem = IO(Flipped(new DMemBundle))
   EXU.ioDMem <> ioDMem
+
+  val SimInfo = if (Config.Sim.enable) Some(Module(new SimInfo)) else None
+  if (Config.Sim.enable) {
+    SimInfo.get.io.SI_PC_IF <> IFU.ioSI.getOrElse(DontCare)
+    SimInfo.get.io.SI_IF_ID <> IDU.ioSI.getOrElse(DontCare)
+    SimInfo.get.io.SI_ID_EX <> EXU.ioSI.getOrElse(DontCare)
+    SimInfo.get.io.SI_EX_WB <> WBU.ioSI.getOrElse(DontCare)
+    SimInfo.get.io.clock := clock
+    SimInfo.get.io.reset := reset
+  }
 }

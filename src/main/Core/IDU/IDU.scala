@@ -3,11 +3,12 @@ package Core.IDU
 import chisel3._
 import chisel3.util._
 
-import Core.Config.Config
+import Tools.Config.Config
 import Core.Reg.module._
 import Core.IDU.module._
 import Core.IFU.module._
 import Core.Pipe.module._
+import Sim._
 
 class IDU extends Module {
   val ioCtrl          = IO(new IDUCtrlBundle())                // 控制信号
@@ -107,4 +108,13 @@ class IDU extends Module {
   ioIDU.csrCtrl    := csrCtrl             // csr控制信号
   ioIDU.excType    := excType             // exc类型
   ioIDU.preFlushPC := ioCSRIDU.preFlushPC // 预冲刷地址
+
+  // Sim
+  val ioSI = if (Config.Sim.enable) Some(IO(Flipped(new Sim.SI_IF_ID))) else None
+  if (Config.Sim.enable) {
+    ioIDU.inst.get   := inst
+    ioSI.get.ioValid := ioValid
+    ioSI.get.pc      := ioIFU.pc
+    ioSI.get.inst    := ioIFU.inst
+  }
 }

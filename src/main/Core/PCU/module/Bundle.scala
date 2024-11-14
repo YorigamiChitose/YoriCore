@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util._
 
 import Core.Pipe.module._
-import Core.Config.Config
+import Tools.Config.Config
 
 // PCU 控制信号
 class PCUCtrlBundle extends Bundle {

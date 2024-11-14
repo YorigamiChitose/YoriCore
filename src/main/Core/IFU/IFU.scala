@@ -3,9 +3,10 @@ package Core.IFU
 import chisel3._
 import chisel3.util._
 
-import Core.Config.Config
+import Tools.Config.Config
 import Core.IFU.module._
 import Core.PCU.module._
+import Sim._
 
 class IFU extends Module {
   val ioCtrl  = IO(new IFUCtrlBundle())           // 控制信号
@@ -26,4 +27,11 @@ class IFU extends Module {
   // IFU IO
   ioIFU.pc   := ioPCU.pc    // PC值
   ioIFU.inst := ioIMem.inst // 指令
+
+  // Sim
+  val ioSI = if (Config.Sim.enable) Some(IO(Flipped(new Sim.SI_PC_IF))) else None
+  if (Config.Sim.enable) {
+    ioSI.get.ioValid := ioValid
+    ioSI.get.pc      := ioPCU.pc
+  }
 }
