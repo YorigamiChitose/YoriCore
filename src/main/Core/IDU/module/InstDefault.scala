@@ -3,7 +3,7 @@ package Core.IDU.module
 import chisel3._
 import chisel3.util._
 
-import Core.Config.Config
+import Tools.Config.Config
 
 object rs1 {
   val NOP = false.B

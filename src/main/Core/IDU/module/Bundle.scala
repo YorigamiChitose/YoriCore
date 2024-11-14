@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util._
 
 import Core.Pipe.module._
-import Core.Config.Config
+import Tools.Config.Config
 
 class IDUCtrlBundle extends Bundle {
   val stallReq = Output(Bool())       // 停止请求
@@ -31,4 +31,6 @@ class IDUStageBundle extends StageBundle {
   val csrCtrl    = Output(UInt(csr.WIDTH.W))            // csr控制信号
   val excType    = Output(UInt(exc.WIDTH.W))            // 异常连续
   val preFlushPC = Output(UInt(exc.WIDTH.W))            // 预冲刷地址
+
+  val inst = if (Config.Sim.enable) Some(Output(UInt(Config.Addr.Width.W))) else None
 }

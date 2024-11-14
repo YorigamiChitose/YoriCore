@@ -3,7 +3,7 @@ package Core.EXU.module
 import chisel3._
 import chisel3.util._
 
-import Core.Config.Config
+import Tools.Config.Config
 import Core.IDU.module._
 import Core.EXU.module._
 import Core.Pipe.module._
@@ -27,6 +27,8 @@ class EXUStageBundle extends StageBundle {
   val rs2Data    = Output(UInt(Config.Reg.Width.W))     // rs2寄存器数据
   val excType    = Output(UInt(exc.WIDTH.W))            // 异常类型
   val EXUResult  = Output(UInt(Config.Data.XLEN.W))     // EXU结果
+
+  val inst = if (Config.Sim.enable) Some(Output(UInt(Config.Addr.Width.W))) else None
 }
 
 class DMemBundle extends Bundle {

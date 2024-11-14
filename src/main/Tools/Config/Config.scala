@@ -1,4 +1,4 @@
-package Core.Config
+package Tools.Config
 
 import chisel3._
 import chisel3.util._
@@ -30,5 +30,9 @@ object Config {
     val H    = 2 * B
     val W    = 2 * H
     val D    = 2 * W
+  }
+
+  object Sim {
+    val enable = true
   }
 }

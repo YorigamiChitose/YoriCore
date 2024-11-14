@@ -1,6 +1,5 @@
 package Tools
 
-import Core.Core
 object build extends App {
   val firtoolLoweringOptions = Array(
     "--lowering-options=" + List(
@@ -16,5 +15,5 @@ object build extends App {
   println("firtool options:")
   firtoolOptions.foreach(opt => println("\t" + opt))
 
-  circt.stage.ChiselStage.emitSystemVerilogFile(new Core, args, firtoolOptions)
+  circt.stage.ChiselStage.emitSystemVerilogFile(new Top, args, firtoolOptions)
 }

@@ -3,12 +3,13 @@ package Core.WBU
 import chisel3._
 import chisel3.util._
 
-import Core.Config.Config
+import Tools.Config.Config
 import Core.IDU.module._
 import Core.EXU.module._
 import Core.WBU.module._
 import Core.Pipe.module._
 import Core.Reg.module._
+import Sim._
 
 class WBU extends Module {
   val ioCtrl          = IO(new WBUCtrlBundle)                // 控制信号
@@ -40,4 +41,13 @@ class WBU extends Module {
   ioCSRWBU.pc       := ioEXU.pc         // 异常地址
 
   ioCtrl.pipe.valid := DontCare // 无下一阶段
+
+  // Sim
+  val ioSI = if (Config.Sim.enable) Some(IO(Flipped(new Sim.SI_EX_WB))) else None
+  if (Config.Sim.enable) {
+    ioSI.get.ioValid := ioValid
+    ioSI.get.pc      := ioEXU.pc
+    ioSI.get.inst    := ioEXU.inst.getOrElse(DontCare)
+    ioSI.get.excType := ioEXU.excType
+  }
 }

@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util._
 
 import Core.IDU.module._
-import Core.Config.Config
+import Tools.Config.Config
 
 class CSRBundle extends Bundle {
   val csrCtrl = Input(UInt(csr.WIDTH.W))         // CSR计算控制

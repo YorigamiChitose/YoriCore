@@ -3,11 +3,12 @@ package Core.EXU
 import chisel3._
 import chisel3.util._
 
-import Core.Config.Config
+import Tools.Config.Config
 import Core.Reg.module._
 import Core.EXU.module._
 import Core.IDU.module._
 import Core.Pipe.module._
+import Sim._
 
 class EXU extends Module {
   val ioCtrl          = IO(new EXUCtrlBundle())                // 控制信号
@@ -82,11 +83,12 @@ class EXU extends Module {
   MUL.ioMUL.flush   := ioCtrl.pipe.flush                    // 冲刷
 
   // LSU
-  val LSU       = Module(new LSU)   // LSU模块
-  val LSUResult = LSU.ioLSU.dataOut // LSU结果
-  val LSUReady  = LSU.ioLSU.ready   // LSU准备完成
+  val LSU       = Module(new LSU)       // LSU模块
+  val LSUResult = LSU.ioLSU.dataOut     // LSU结果
+  val LSUReady  = LSU.ioLSU.ready       // LSU准备完成
+  val LSUAddr   = operator1 + operator2 // LSU地址
   LSU.ioLSU.memCtrl := ioIDU.memCtrl // LSU控制信号
-  LSU.ioLSU.addr    := ALUResult     // 地址计算结果
+  LSU.ioLSU.addr    := LSUAddr       // 地址计算结果
   LSU.ioLSU.dataIn  := ioEXU.rs2Data // 保存数据
 
   // 运算结果
@@ -102,9 +104,9 @@ class EXU extends Module {
   )
 
   // Pipe控制
-  ioCtrl.stallReq := ((ioIDU.mulCtrl =/= mul.NOP) && !MULReady) ||
+  ioCtrl.stallReq   := ((ioIDU.mulCtrl =/= mul.NOP) && !MULReady) ||
     ((ioIDU.divCtrl =/= div.NOP) && !DIVReady) ||
-    (ioIDU.memCtrl =/= mem.NOP) // TODO: LSU
+    (ioIDU.memCtrl =/= mem.NOP) && !LSUReady
   ioCtrl.flushPC    := MuxCase(
     0.U(Config.Addr.Width.W),
     Seq(
@@ -121,7 +123,8 @@ class EXU extends Module {
       (ioIDU.csrCtrl =/= csr.NOP)       -> true.B,
       (ioIDU.divCtrl =/= div.NOP)       -> DIVReady,
       (ioIDU.memCtrl =/= mem.NOP)       -> LSUReady,
-      (ioIDU.mulCtrl =/= mul.NOP)       -> MULReady
+      (ioIDU.mulCtrl =/= mul.NOP)       -> MULReady,
+      (ioIDU.excType === exc.EBREAK)    -> true.B // for npc
     )
   )
   ioCtrl.busy       := (ioIDU.mulCtrl =/= mul.NOP) && !LSUReady
@@ -154,4 +157,13 @@ class EXU extends Module {
   ioEXU.rs2Data    := ioIDU.rs2Data    // rs2数据
   ioEXU.EXUResult  := EXUResult        // EXU计算结果
   ioEXU.excType    := ioIDU.excType    // 异常类型
+
+  // Sim
+  val ioSI = if (Config.Sim.enable) Some(IO(Flipped(new Sim.SI_ID_EX))) else None
+  if (Config.Sim.enable) {
+    ioEXU.inst.get   := ioIDU.inst.getOrElse(DontCare)
+    ioSI.get.ioValid := ioValid
+    ioSI.get.pc      := ioIDU.pc
+    ioSI.get.inst    := ioIDU.inst.getOrElse(DontCare)
+  }
 }

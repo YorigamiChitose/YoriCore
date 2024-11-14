@@ -113,13 +113,13 @@ object RV32I {
     INST.CSRRSI  -> List(rs1.NOP, rs2.NOP, rd.EN, op1.NOP, op2.IMM, alu.NOP, imm.ZIMM, branch.NOP, mul.NOP, div.NOP, mem.NOP, csr.RSI, exc.NOP),
     INST.CSRRCI  -> List(rs1.NOP, rs2.NOP, rd.EN, op1.NOP, op2.IMM, alu.NOP, imm.ZIMM, branch.NOP, mul.NOP, div.NOP, mem.NOP, csr.RCI, exc.NOP),
     // 存取 // 借用ALU计算
-    INST.LB      -> List(rs1.EN, rs2.NOP, rd.EN, op1.RS1, op2.IMM, alu.ADD, imm.I, branch.NOP, mul.NOP, div.NOP, mem.LB, csr.NOP, exc.NOP),
-    INST.LH      -> List(rs1.EN, rs2.NOP, rd.EN, op1.RS1, op2.IMM, alu.ADD, imm.I, branch.NOP, mul.NOP, div.NOP, mem.LH, csr.NOP, exc.NOP),
-    INST.LBU     -> List(rs1.EN, rs2.NOP, rd.EN, op1.RS1, op2.IMM, alu.ADD, imm.I, branch.NOP, mul.NOP, div.NOP, mem.LBU, csr.NOP, exc.NOP),
-    INST.LHU     -> List(rs1.EN, rs2.NOP, rd.EN, op1.RS1, op2.IMM, alu.ADD, imm.I, branch.NOP, mul.NOP, div.NOP, mem.LHU, csr.NOP, exc.NOP),
-    INST.LW      -> List(rs1.EN, rs2.NOP, rd.EN, op1.RS1, op2.IMM, alu.ADD, imm.I, branch.NOP, mul.NOP, div.NOP, mem.LW, csr.NOP, exc.NOP),
-    INST.SB      -> List(rs1.EN, rs2.EN, rd.NOP, op1.RS1, op2.IMM, alu.ADD, imm.S, branch.NOP, mul.NOP, div.NOP, mem.SB, csr.NOP, exc.NOP),
-    INST.SH      -> List(rs1.EN, rs2.EN, rd.NOP, op1.RS1, op2.IMM, alu.ADD, imm.S, branch.NOP, mul.NOP, div.NOP, mem.SH, csr.NOP, exc.NOP),
-    INST.SW      -> List(rs1.EN, rs2.EN, rd.NOP, op1.RS1, op2.IMM, alu.ADD, imm.S, branch.NOP, mul.NOP, div.NOP, mem.SW, csr.NOP, exc.NOP)
+    INST.LB      -> List(rs1.EN, rs2.NOP, rd.EN, op1.RS1, op2.IMM, alu.NOP, imm.I, branch.NOP, mul.NOP, div.NOP, mem.LB, csr.NOP, exc.NOP),
+    INST.LH      -> List(rs1.EN, rs2.NOP, rd.EN, op1.RS1, op2.IMM, alu.NOP, imm.I, branch.NOP, mul.NOP, div.NOP, mem.LH, csr.NOP, exc.NOP),
+    INST.LBU     -> List(rs1.EN, rs2.NOP, rd.EN, op1.RS1, op2.IMM, alu.NOP, imm.I, branch.NOP, mul.NOP, div.NOP, mem.LBU, csr.NOP, exc.NOP),
+    INST.LHU     -> List(rs1.EN, rs2.NOP, rd.EN, op1.RS1, op2.IMM, alu.NOP, imm.I, branch.NOP, mul.NOP, div.NOP, mem.LHU, csr.NOP, exc.NOP),
+    INST.LW      -> List(rs1.EN, rs2.NOP, rd.EN, op1.RS1, op2.IMM, alu.NOP, imm.I, branch.NOP, mul.NOP, div.NOP, mem.LW, csr.NOP, exc.NOP),
+    INST.SB      -> List(rs1.EN, rs2.EN, rd.NOP, op1.RS1, op2.IMM, alu.NOP, imm.S, branch.NOP, mul.NOP, div.NOP, mem.SB, csr.NOP, exc.NOP),
+    INST.SH      -> List(rs1.EN, rs2.EN, rd.NOP, op1.RS1, op2.IMM, alu.NOP, imm.S, branch.NOP, mul.NOP, div.NOP, mem.SH, csr.NOP, exc.NOP),
+    INST.SW      -> List(rs1.EN, rs2.EN, rd.NOP, op1.RS1, op2.IMM, alu.NOP, imm.S, branch.NOP, mul.NOP, div.NOP, mem.SW, csr.NOP, exc.NOP)
   )
 }
