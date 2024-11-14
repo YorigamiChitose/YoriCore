@@ -1,4 +1,5 @@
 #include "cpu/cpu.h"
+#include "isa/isa.h"
 #include "macro.h"
 #include "monitor/monitor.h"
 #include "utils.h"
@@ -34,8 +35,8 @@ static int cmd_help(char *args);
 static int cmd_c(char *args);
 static int cmd_q(char *args);
 static int cmd_si(char *args);
-// static int cmd_sr(char *args);
-// static int cmd_info(char *args);
+static int cmd_sr(char *args);
+static int cmd_info(char *args);
 // static int cmd_x(char *args);
 // static int cmd_p(char *args);
 // static int cmd_w(char *args);
@@ -52,8 +53,8 @@ static struct {
     {"c", "Usage: c\t\t\t - Continue the execution of the program.", cmd_c},
     {"q", "Usage: q\t\t\t - Exit NEMU.", cmd_q},
     {"si", "Usage: si\t[int]\t\t - Run step by step.", cmd_si},
-    // {"sr", "Usage: sr\t\t\t - Run step by step with reg info.", cmd_sr},
-    // {"info", "Usage: info\tr | w\t\t - Get the info.", cmd_info},
+    {"sr", "Usage: sr\t\t\t - Run step by step with reg info.", cmd_sr},
+    {"info", "Usage: info\tr | w\t\t - Get the info.", cmd_info},
     // {"x", "Usage: x\t[int] [str]\t - Scan the memory.", cmd_x},
     // {"p", "Usage: p\t[str]\t\t - Calculate.", cmd_p},
     // {"w", "Usage: w\t[str]\t\t - Set a new watchpoint.", cmd_w},
@@ -140,6 +141,30 @@ static int cmd_si(char *args) {
     cpu_exec(steps);
   } else {
     printf("Error, please retry!\n");
+  }
+  return 0;
+}
+
+static int cmd_sr(char *args) {
+  cpu_exec(1);
+  isa_reg_display();
+  return 0;
+}
+
+static int cmd_info(char *args) {
+  char *arg = get_arguments(args, 1);
+  if (arg == NULL) {
+    printf("Error, please retry!\n");
+    return 0;
+  }
+  if (strcmp(arg, "r") == 0) {
+    isa_reg_display();
+  } else if (strcmp(arg, "w") == 0) {
+    // #ifdef CONFIG_WATCH_POINT
+    //     check_wp();
+    // #else
+    //     printf("Watch point not enabled\n");
+    // #endif
   }
   return 0;
 }

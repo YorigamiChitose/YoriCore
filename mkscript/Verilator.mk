@@ -15,6 +15,9 @@ SIM_CONFIG            = $(SIM_DIR)/verilator.vlt
 SIM_AUTOCONFIG_H      = $(SIM_INC_DIR)/autoconf/autoconf.h
 SIM_AUTOCONFIG_CONFIG = $(TOP_DIR)/.config
 
+SIM_ARGS ?=
+SIM_IMG ?=
+
 $(SIM_TARGET): $(SIM_SRC_PATH) $(CHISEL_BUILD_TOP_VSRC) $(SIM_AUTOCONFIG_H)
 	@echo "$(COLOR_R)--- verilator start  ---$(COLOR_NO)"
 	verilator \
@@ -42,7 +45,7 @@ verilator: $(SIM_TARGET)
 
 run: $(SIM_TARGET)
 	@echo "$(COLOR_R)--- run start ---$(COLOR_NO)"
-	@cd $(SIM_BUILD_DIR) && $(SIM_TARGET)
+	@cd $(SIM_BUILD_DIR) && $(SIM_TARGET) $(SIM_ARGS) $(SIM_IMG)
 	@echo "$(COLOR_R)--- run finish ---$(COLOR_NO)"
 
 wave:

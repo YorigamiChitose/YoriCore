@@ -22,4 +22,7 @@ typedef struct {
 extern CPU_state cpu;
 word_t isa_reg_str2val(const char *s, bool *success);
 void engine_start(void);
+void init_isa(void);
+void isa_reg_display(void);
+void set_npc_state(int state, vaddr_t pc, int halt_ret);
 #endif
