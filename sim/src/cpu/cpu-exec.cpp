@@ -8,19 +8,24 @@
 void refresh_cpu_next_status(void) {}
 
 void exec_once(void) {
-  step_verilator();
-  refresh_verilator_status();
-  if (cpu_status.SIM_valid) {
-    cpu.pc = cpu_status.SIM_pc;
-    if (cpu_status.SIM_excType == EXC_EBREAK) {
-      NPCTRAP(cpu.pc, cpu.gpr[10]);
+  while (true) {
+    step_verilator();
+    refresh_verilator_status();
+    if (cpu_status.SIM_valid) {
+      cpu.pc = cpu_status.SIM_pc;
+      if (cpu_status.SIM_excType == EXC_EBREAK) {
+        NPCTRAP(cpu.pc, cpu.gpr[10]);
+      }
+      break;
     }
   }
 }
 
+uint64_t g_nr_guest_inst = 0;
 void execute(uint64_t n) {
   while (n-- > 0) {
     exec_once();
+    g_nr_guest_inst++;
 
     if (npc_state.state != NPC_RUNNING) {
       break;
@@ -28,7 +33,6 @@ void execute(uint64_t n) {
   }
 }
 
-uint64_t g_nr_guest_inst = 0;
 uint64_t g_timer = 0; // unit: us
 void statistic(void) {
 #define NUMBERIC_FMT "%'" PRIu64
