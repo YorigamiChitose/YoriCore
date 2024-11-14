@@ -1,9 +1,22 @@
+#include "cpu/cpu.h"
 #include "debug.h"
+#include "isa/isa.h"
 #include "utils.h"
 #include "verilator/verilator.h"
 #include <cstdint>
 
-void exec_once(void) { step_verilator(); }
+void refresh_cpu_next_status(void) {}
+
+void exec_once(void) {
+  step_verilator();
+  refresh_verilator_status();
+  if (cpu_status.SIM_valid) {
+    cpu.pc = cpu_status.SIM_pc;
+    if (cpu_status.SIM_excType == EXC_EBREAK) {
+      NPCTRAP(cpu.pc, cpu.gpr[10]);
+    }
+  }
+}
 
 void execute(uint64_t n) {
   while (n-- > 0) {

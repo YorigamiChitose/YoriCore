@@ -38,12 +38,30 @@ struct CPU_STATUS {
   uint32_t EX_WB_pc;
   uint32_t EX_WB_inst;
   int EX_WB_excType;
+  // SIM
+  bool SIM_valid;
+  uint32_t SIM_pc;
+  uint32_t SIM_inst;
+  int SIM_excType;
 };
 extern struct CPU_STATUS cpu_status;
 
 void init_verilator(void);
 void step_verilator(void);
 void exit_verilator(void);
-void refresh_cpu_status(void);
+void refresh_verilator_status(void);
+
+enum {
+  EXC_NOP,
+  EXC_EBREAK,
+  EXC_ECALL,
+  EXC_ILLEGAL_INST,
+  EXC_MRET,
+  EXC_SRET,
+  EXC_WFI,
+  EXC_SFENCE_VMA,
+  EXC_FENCE,
+  EXC_FENCE_I
+};
 
 #endif

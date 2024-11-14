@@ -13,6 +13,7 @@ static inline int check_reg_idx(int idx) {
 }
 
 #define gpr(idx) (cpu.gpr[check_reg_idx(idx)])
+#define NPCTRAP(thispc, code) set_npc_state(NPC_END, thispc, code)
 
 static inline const char *reg_name(int idx) {
   extern const char *regs[];

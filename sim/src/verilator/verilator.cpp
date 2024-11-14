@@ -45,7 +45,11 @@ void step_verilator(void) {
 
 struct CPU_STATUS cpu_status;
 
-void refresh_cpu_status(void) {
+void refresh_verilator_status(void) {
+  cpu_status.SIM_valid = cpu_status.EX_WB_valid;
+  cpu_status.SIM_pc = cpu_status.EX_WB_pc;
+  cpu_status.SIM_inst = cpu_status.EX_WB_inst;
+  cpu_status.SIM_excType = cpu_status.EX_WB_excType;
   cpu_status.PC_IF_valid = vtop->Top->core->SimInfo->SI_PC_IF_ioValid;
   cpu_status.PC_IF_pc = vtop->Top->core->SimInfo->SI_PC_IF_pc;
   cpu_status.IF_ID_valid = vtop->Top->core->SimInfo->SI_IF_ID_ioValid;

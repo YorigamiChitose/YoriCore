@@ -1,15 +1,16 @@
 #include "monitor/monitor.h"
 #include "debug.h"
+#include "isa/isa.h"
 #include "macro.h"
 #include "memory/memory.h"
 #include "verilator/verilator.h"
 #include <cstdlib>
 #include <getopt.h>
 
-static char *img_file = NULL;
-static char *elf_file = NULL;
+char *img_file = NULL;
+char *elf_file = NULL;
 
-static void welcome() {
+void welcome(void) {
   Log("Trace: %s", MUXDEF(CONFIG_TRACE, ANSI_FMT("ON", ANSI_FG_GREEN),
                           ANSI_FMT("OFF", ANSI_FG_RED)));
   Log("Build time: %s, %s", __TIME__, __DATE__);
@@ -18,7 +19,7 @@ static void welcome() {
   printf("For help, type \"help\"\n");
 }
 
-static long load_img() {
+long load_img(void) {
   if (img_file == NULL) {
     Log("No image is given. Use the default build-in image.");
     return 4096; // built-in image size
@@ -79,6 +80,12 @@ void init_monitor(int argc, char *argv[]) {
 
   /* init mem */
   init_mem();
+
+  /* init isa */
+  init_isa();
+
+  /* read img */
+  load_img();
 
   /* init verilator */
   init_verilator();
