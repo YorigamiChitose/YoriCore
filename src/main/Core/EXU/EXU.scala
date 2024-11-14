@@ -83,11 +83,12 @@ class EXU extends Module {
   MUL.ioMUL.flush   := ioCtrl.pipe.flush                    // 冲刷
 
   // LSU
-  val LSU       = Module(new LSU)   // LSU模块
-  val LSUResult = LSU.ioLSU.dataOut // LSU结果
-  val LSUReady  = LSU.ioLSU.ready   // LSU准备完成
+  val LSU       = Module(new LSU)       // LSU模块
+  val LSUResult = LSU.ioLSU.dataOut     // LSU结果
+  val LSUReady  = LSU.ioLSU.ready       // LSU准备完成
+  val LSUAddr   = operator1 + operator2 // LSU地址
   LSU.ioLSU.memCtrl := ioIDU.memCtrl // LSU控制信号
-  LSU.ioLSU.addr    := ALUResult     // 地址计算结果
+  LSU.ioLSU.addr    := LSUAddr       // 地址计算结果
   LSU.ioLSU.dataIn  := ioEXU.rs2Data // 保存数据
 
   // 运算结果
