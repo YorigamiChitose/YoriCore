@@ -5,25 +5,25 @@
 #include <VTop_SimInfo.h>
 #include <VTop_Top.h>
 #include <verilated.h>
-#include <verilated_vcd_c.h>
+#include <verilated_fst_c.h>
 
 CPU_state cpu = {};
 VTop *vtop = NULL;
 #ifdef CONFIG_WAVE
 VerilatedContext *contextp = NULL;
-VerilatedVcdC *tfp = NULL;
+VerilatedFstC *tfp = NULL;
 #endif
 
 void init_verilator(void) {
 #ifdef CONFIG_WAVE
   contextp = new VerilatedContext;
-  tfp = new VerilatedVcdC;
+  tfp = new VerilatedFstC;
 #endif
   vtop = new VTop;
 #ifdef CONFIG_WAVE
   contextp->traceEverOn(true);
   vtop->trace(tfp, 3);
-  tfp->open("wave.vcd");
+  tfp->open("wave.fst");
 #endif
   vtop->reset = 1;
   vtop->clock = 0;
