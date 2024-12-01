@@ -3,14 +3,14 @@
 
 #include <VTop.h>
 #include <verilated.h>
-#include <verilated_vcd_c.h>
+#include <verilated_fst_c.h>
 
 #include "common.h"
 
 extern VTop *vtop;
 #ifdef CONFIG_WAVE
 extern VerilatedContext *contextp;
-extern VerilatedVcdC *tfp;
+extern VerilatedFstC *tfp;
 #endif
 
 inline void eval_verilator(void) {
