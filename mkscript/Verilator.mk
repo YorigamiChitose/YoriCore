@@ -19,7 +19,7 @@ SIM_ARGS ?=
 SIM_IMG ?=
 
 $(SIM_TARGET): $(SIM_SRC_PATH) $(CHISEL_BUILD_TOP_VSRC) $(SIM_AUTOCONFIG_H)
-	@echo "$(COLOR_R)--- verilator start  ---$(COLOR_NO)"
+	@echo -e "$(COLOR_R)--- verilator start  ---$(COLOR_NO)"
 	verilator \
 		--cc $(SIM_CONFIG) $(CHISEL_BUILD_VSRC) \
 		--exe $(SIM_SRC_PATH) \
@@ -30,12 +30,12 @@ $(SIM_TARGET): $(SIM_SRC_PATH) $(CHISEL_BUILD_TOP_VSRC) $(SIM_AUTOCONFIG_H)
 		--trace-fst \
 		$(SIM_FLAG)
 	make -C $(SIM_BUILD_DIR) -f V$(TOP_MODULE).mk -s
-	@echo "$(COLOR_R)--- verilator finish ---$(COLOR_NO)"
+	@echo -e "$(COLOR_R)--- verilator finish ---$(COLOR_NO)"
 
 $(SIM_AUTOCONFIG_H): $(SIM_AUTOCONFIG_CONFIG)
-	@echo "$(COLOR_R)--- generate autoconf start  ---$(COLOR_NO)"
+	@echo -e "$(COLOR_R)--- generate autoconf start  ---$(COLOR_NO)"
 	genconfig --header-path $(SIM_AUTOCONFIG_H) --config-out $(SIM_AUTOCONFIG_CONFIG)
-	@echo "$(COLOR_R)--- generate autoconf finish ---$(COLOR_NO)"
+	@echo -e "$(COLOR_R)--- generate autoconf finish ---$(COLOR_NO)"
 
 menuconfig:
 	menuconfig
@@ -44,9 +44,9 @@ menuconfig:
 verilator: $(SIM_TARGET)
 
 run: $(SIM_TARGET)
-	@echo "$(COLOR_R)--- run start ---$(COLOR_NO)"
+	@echo -e "$(COLOR_R)--- run start ---$(COLOR_NO)"
 	@cd $(SIM_BUILD_DIR) && $(SIM_TARGET) $(SIM_ARGS) $(SIM_IMG)
-	@echo "$(COLOR_R)--- run finish ---$(COLOR_NO)"
+	@echo -e "$(COLOR_R)--- run finish ---$(COLOR_NO)"
 
 wave:
 	@cd $(SIM_BUILD_DIR) && gtkwave ./wave.fst
