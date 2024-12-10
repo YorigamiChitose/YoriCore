@@ -34,12 +34,12 @@ $(SIM_TARGET): $(SIM_SRC_PATH) $(CHISEL_BUILD_TOP_VSRC) $(SIM_AUTOCONFIG_H)
 
 $(SIM_AUTOCONFIG_H): $(SIM_AUTOCONFIG_CONFIG)
 	@echo "$(COLOR_R)--- generate autoconf start  ---$(COLOR_NO)"
-	python3 /usr/lib/python3/dist-packages/genconfig.py --header-path $(SIM_AUTOCONFIG_H) --config-out $(SIM_AUTOCONFIG_CONFIG)
+	genconfig --header-path $(SIM_AUTOCONFIG_H) --config-out $(SIM_AUTOCONFIG_CONFIG)
 	@echo "$(COLOR_R)--- generate autoconf finish ---$(COLOR_NO)"
 
 menuconfig:
-	python3 /usr/lib/python3/dist-packages/menuconfig.py
-	python3 /usr/lib/python3/dist-packages/genconfig.py --header-path $(SIM_AUTOCONFIG_H) --config-out $(SIM_AUTOCONFIG_CONFIG)
+	menuconfig
+	genconfig --header-path $(SIM_AUTOCONFIG_H) --config-out $(SIM_AUTOCONFIG_CONFIG)
 
 verilator: $(SIM_TARGET)
 
