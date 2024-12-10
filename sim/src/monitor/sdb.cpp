@@ -4,6 +4,7 @@
 #include "monitor/monitor.h"
 #include "utils.h"
 #include <cstdlib>
+#include <cstdio>
 #include <readline/history.h>
 #include <readline/readline.h>
 
