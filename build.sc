@@ -20,7 +20,7 @@ object playground extends SbtModule with ScalafmtModule { m =>
   }
 
   override def resources = T.sources {
-    super.resources() ++ Seq(PathRef(millSourcePath / "main" / "resources"))
+    super.resources() ++ Seq(PathRef(millSourcePath / "main" / "scala" / "resources"))
   }
 
   override def ivyDeps = Agg(
