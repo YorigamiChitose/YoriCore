@@ -1,7 +1,7 @@
 .PHONY: reformat checkformat
 
 reformat:
-	millw -i __.reformat
+	mill -i __.reformat
 
 checkformat:
-	millw -i __.checkFormat
+	mill -i __.checkFormat
