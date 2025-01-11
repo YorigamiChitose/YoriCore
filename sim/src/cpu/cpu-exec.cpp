@@ -46,7 +46,10 @@ void statistic(void) {
         "frequency");
 }
 
-void assert_fail_msg(void) { statistic(); }
+void assert_fail_msg(void) {
+  statistic();
+  exit_verilator();
+}
 
 bool g_print_step = false;
 void cpu_exec(uint64_t n) {
