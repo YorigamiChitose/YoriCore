@@ -18,9 +18,8 @@ void init_mem(void) {
 }
 
 static void out_of_bound(uint32_t addr) {
-  printf("address = 0x%08x is out of bound of pmem [0x%08x, 0x%08x]\n", addr,
-         PMEM_LEFT, PMEM_RIGHT);
-  assert(0);
+  panic("address = 0x%08x is out of bound of pmem [0x%08x, 0x%08x]\n", addr,
+        PMEM_LEFT, PMEM_RIGHT);
 }
 
 uint32_t pmem_read(uint32_t addr, int len) {
