@@ -1,7 +1,7 @@
 /*
 /*/
 
-!/src/
+!/playground/
 !/sim/
 !/.github/
 !/mkscript/
@@ -9,7 +9,7 @@
 !/Makefile
 !/.gitignore
 !/.scalafmt.conf
-!/build.sc
+!/build.mill
 !/README.md
 !/.mill-version
 !/Kconfig
