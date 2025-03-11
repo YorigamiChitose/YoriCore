@@ -19,7 +19,7 @@ class PipeStage[T <: StageBundle](stageBundle: T) extends Module {
     // 被命令冲刷 || 前级停止后级继续
     stageReg := stageBundle.initVal() // 发送默认数据
     validReg := false.B               // 设置valid为false
-  }.elsewhen(!ioPipeCtrl.stallPrev) {
+  }.elsewhen(!ioPipeCtrl.stallPrev && ioPipeCtrl.valid) {
     // 前级未完成 || 前级不停止
     stageReg := ioPrevStage // 向后传输
     validReg := true.B      // 设置valid为true
