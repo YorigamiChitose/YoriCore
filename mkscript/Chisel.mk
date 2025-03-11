@@ -4,9 +4,9 @@
 CHISEL_BUILD_DIR      = $(BUILD_DIR)/chisel
 CHISEL_BUILD_TOP_VSRC = $(CHISEL_BUILD_DIR)/$(TOP_MODULE).sv
 CHISEL_BUILD_VSRC     = $(wildcard $(CHISEL_BUILD_DIR)/*.sv)
-CHISEL_DIR            = $(TOP_DIR)/src
-CHISEL_MAIN_DIR       = $(CHISEL_DIR)/main/scala
-CHISEL_TEST_DIR       = $(CHISEL_DIR)/test/scala
+CHISEL_DIR            = $(TOP_DIR)/$(PRJ)
+CHISEL_MAIN_DIR       = $(CHISEL_DIR)/src
+CHISEL_TEST_DIR       = $(CHISEL_DIR)/test/src
 CHISEL_SRC_PATH       = $(foreach dir, $(shell find $(CHISEL_MAIN_DIR) -maxdepth 5 -type d), $(wildcard $(dir)/*.scala)) \
 												$(wildcard $(CHISEL_MAIN_DIR)/resources/*.sv)
 CHISEL_TOOL           = Tools.build
