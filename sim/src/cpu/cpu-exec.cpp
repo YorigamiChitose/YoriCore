@@ -53,7 +53,11 @@ void assert_fail_msg(void) {
 
 bool g_print_step = false;
 void cpu_exec(uint64_t n) {
+#ifdef CONFIG_ITRACE_PRINT_MAXNUM
   g_print_step = (n < CONFIG_ITRACE_PRINT_MAXNUM);
+#else
+  g_print_step = false;
+#endif
   switch (npc_state.state) {
   case NPC_END:
   case NPC_ABORT:
