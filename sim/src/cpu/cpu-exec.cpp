@@ -8,6 +8,7 @@
 void refresh_cpu_next_status(void) {}
 
 void exec_once(void) {
+  int count_cycle = 0;
   while (true) {
     step_verilator();
     refresh_verilator_status();
@@ -17,6 +18,10 @@ void exec_once(void) {
         NPCTRAP(cpu.pc, cpu.gpr[10]);
       }
       break;
+    }
+    count_cycle++;
+    if (count_cycle > 100) {
+      panic("verilator simulation timeout");
     }
   }
 }
