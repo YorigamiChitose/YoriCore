@@ -1,5 +1,6 @@
 #include "monitor/monitor.h"
 #include "debug.h"
+#include "difftest-def.h"
 #include "isa/isa.h"
 #include "macro.h"
 #include "memory/memory.h"
@@ -9,6 +10,8 @@
 
 char *img_file = NULL;
 char *elf_file = NULL;
+char *diff_so_file = NULL;
+int difftest_port = 1234;
 
 void welcome(void) {
   Log("Trace: %s", MUXDEF(CONFIG_TRACE, ANSI_FMT("ON", ANSI_FG_GREEN),
@@ -63,10 +66,19 @@ static int parse_args(int argc, char *argv[]) {
     case 1:
       img_file = optarg;
       return 0;
+    case 'd':
+      diff_so_file = optarg;
+      break;
+    case 'p':
+      sscanf(optarg, "%d", &difftest_port);
+      break;
     default:
       printf("Usage: %s [OPTION...] IMAGE [args]\n\n", argv[0]);
       printf("\t-b,--batch              run with batch mode\n");
       printf("\t-e,--elf=FILE           elf FILE to be parsed\n");
+      printf("\t-d,--diff=REF_SO        run DiffTest with reference REF_SO\n");
+      printf("\t-p,--port=PORT          run DiffTest with port PORT\n");
+      printf("\t-h,--help               print program help info\n");
       printf("\n");
       exit(0);
     }
@@ -85,7 +97,10 @@ void init_monitor(int argc, char *argv[]) {
   init_isa();
 
   /* read img */
-  load_img();
+  long img_size = load_img();
+
+  /* init difftest */
+  IFDEF(CONFIG_DIFFTEST, init_difftest(diff_so_file, img_size, difftest_port));
 
   /* init verilator */
   init_verilator();

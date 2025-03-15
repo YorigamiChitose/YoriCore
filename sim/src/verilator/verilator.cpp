@@ -1,13 +1,16 @@
 #include "verilator/verilator.h"
+#include "common.h"
 #include "isa/isa.h"
+#include "memory/memory.h"
 #include <VTop.h>
 #include <VTop_Core.h>
 #include <VTop_SimInfo.h>
 #include <VTop_Top.h>
+#include <cstring>
 #include <verilated.h>
 #include <verilated_fst_c.h>
 
-CPU_state cpu = {};
+CPU_state cpu = {.pc = RESET_VECTOR};
 VTop *vtop = NULL;
 #ifdef CONFIG_WAVE
 VerilatedContext *contextp = NULL;
@@ -46,6 +49,7 @@ void step_verilator(void) {
 struct CPU_STATUS cpu_status;
 
 void refresh_verilator_status(void) {
+  memcpy(cpu.gpr, cpu_gpr, sizeof(cpu.gpr));
   cpu_status.SIM_valid = cpu_status.EX_WB_valid;
   cpu_status.SIM_pc = cpu_status.EX_WB_pc;
   cpu_status.SIM_inst = cpu_status.EX_WB_inst;

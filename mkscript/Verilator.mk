@@ -15,8 +15,8 @@ SIM_CONFIG            = $(SIM_DIR)/verilator.vlt
 SIM_AUTOCONFIG_H      = $(SIM_INC_DIR)/autoconf/autoconf.h
 SIM_AUTOCONFIG_CONFIG = $(TOP_DIR)/.config
 
-SIM_ARGS ?=
-SIM_IMG ?=
+SO_PATH ?= $(NEMU_HOME)/build/riscv32-nemu-interpreter-so
+SIM_ARGS ?= --diff=$(SO_PATH) --port=1234
 
 $(SIM_TARGET): $(SIM_SRC_PATH) $(CHISEL_BUILD_TOP_VSRC) $(SIM_AUTOCONFIG_H)
 	@echo -e "$(COLOR_R)--- verilator start  ---$(COLOR_NO)"
@@ -46,7 +46,7 @@ verilator: $(SIM_TARGET)
 
 run: $(SIM_TARGET)
 	@echo -e "$(COLOR_R)--- run start ---$(COLOR_NO)"
-	@cd $(TOP_DIR) && $(SIM_TARGET) $(SIM_ARGS) $(SIM_IMG)
+	cd $(TOP_DIR) && $(SIM_TARGET) $(SIM_ARGS)
 	@echo -e "$(COLOR_R)--- run finish ---$(COLOR_NO)"
 
 wave:

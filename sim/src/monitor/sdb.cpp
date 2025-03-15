@@ -1,12 +1,17 @@
 #include "cpu/cpu.h"
 #include "isa/isa.h"
 #include "macro.h"
+#include "memory/memory.h"
 #include "monitor/monitor.h"
 #include "utils.h"
 #include <cstdio>
 #include <cstdlib>
 #include <readline/history.h>
 #include <readline/readline.h>
+
+#define LIST_NUM 2
+#define add_cnt(x) (x % LIST_NUM ? 1 : 0)
+#define addr_cnt(x) (x / LIST_NUM + add_cnt(x))
 
 static char *rl_gets() {
   static char *line_read = NULL;
@@ -38,10 +43,10 @@ static int cmd_q(char *args);
 static int cmd_si(char *args);
 static int cmd_sr(char *args);
 static int cmd_info(char *args);
-// static int cmd_x(char *args);
-// static int cmd_p(char *args);
-// static int cmd_w(char *args);
-// static int cmd_d(char *args);
+static int cmd_x(char *args);
+static int cmd_p(char *args);
+static int cmd_w(char *args);
+static int cmd_d(char *args);
 // static int cmd_trace(char *args);
 
 static struct {
@@ -56,10 +61,10 @@ static struct {
     {"si", "Usage: si\t[int]\t\t - Run step by step.", cmd_si},
     {"sr", "Usage: sr\t\t\t - Run step by step with reg info.", cmd_sr},
     {"info", "Usage: info\tr | w\t\t - Get the info.", cmd_info},
-    // {"x", "Usage: x\t[int] [str]\t - Scan the memory.", cmd_x},
-    // {"p", "Usage: p\t[str]\t\t - Calculate.", cmd_p},
-    // {"w", "Usage: w\t[str]\t\t - Set a new watchpoint.", cmd_w},
-    // {"d", "Usage: d\t[int]\t\t - Delete a watchpoint.", cmd_d},
+    {"x", "Usage: x\t[int] [str]\t - Scan the memory.", cmd_x},
+    {"p", "Usage: p\t[str]\t\t - Calculate.", cmd_p},
+    {"w", "Usage: w\t[str]\t\t - Set a new watchpoint.", cmd_w},
+    {"d", "Usage: d\t[int]\t\t - Delete a watchpoint.", cmd_d},
     // {"trace", "Usage: trace\t[str]\t\t - Check the inst.", cmd_trace}
 };
 
@@ -170,6 +175,102 @@ static int cmd_info(char *args) {
   return 0;
 }
 
+static int cmd_p(char *args) {
+  if (args == NULL) {
+    printf("Error, please retry!\n");
+    return 0;
+  }
+  char *arg = args;
+  bool flag = true;
+  word_t answer = expr(arg, &flag);
+  if (flag) {
+    printf("answer = " FMT_WORD "\n", answer);
+  } else {
+    printf("Error! please retry!\n");
+  }
+  return 0;
+}
+
+static int cmd_x(char *args) {
+  char *memory_len_str = get_arguments(args, 1);
+  if (memory_len_str == NULL) {
+    printf("Error, please retry!\n");
+    return 0;
+  }
+  char *memory_addr_str = find_next_str(get_arguments(args, 1));
+  if (memory_addr_str == NULL) {
+    printf("Error, please retry!\n");
+    return 0;
+  }
+  bool len_flag = true;
+  bool addr_flag = true;
+  word_t memory_len = expr(memory_len_str, &len_flag);
+  word_t memory_addr = expr(memory_addr_str, &addr_flag);
+  if (len_flag && addr_flag) {
+    for (int i = 0; i < LIST_NUM; i++) {
+      printf("|    addr    |    data    |");
+    }
+    printf("\n");
+    for (int i = 0; i < addr_cnt(memory_len); i++) {
+      for (int j = 0; i + j * addr_cnt(memory_len) < memory_len; j++) {
+        printf("| " FMT_WORD " : " FMT_WORD " |",
+               (memory_addr + (i + j * addr_cnt(memory_len)) * 4),
+               pmem_read(memory_addr + (i + j * addr_cnt(memory_len)) * 4, 4));
+      }
+      printf("\n");
+    }
+  } else {
+    printf("Error! please retry!\n");
+  }
+  return 0;
+}
+
+static int cmd_d(char *args) {
+#ifdef CONFIG_WATCH_POINT
+  if (args == NULL) {
+    printf("Error, please retry!\n");
+    return 0;
+  }
+  char *arg = args;
+  bool flag = true;
+  word_t answer = expr(arg, &flag);
+  if (flag) {
+    bool success;
+    free_wp(answer, &success);
+    if (success) {
+      printf("Delete watchpoint " FMT_WORD " success.\n", answer);
+    } else {
+      printf("Error!\n");
+    }
+  } else {
+    printf("Error! please retry!\n");
+  }
+#else
+  printf("Watch point not enabled\n");
+#endif
+  return 0;
+}
+
+static int cmd_w(char *args) {
+#ifdef CONFIG_WATCH_POINT
+  if (args == NULL) {
+    printf("Error, please retry!\n");
+    return 0;
+  }
+  char *expr = args;
+  bool flag;
+  WP *temp = new_wp(expr, &flag);
+  if (flag) {
+    printf("New watch point set success\nexpression = %s\n", temp->expression);
+  } else {
+    printf("Error! Watch point full\n");
+  }
+#else
+  printf("Watch point not enabled\n");
+#endif
+  return 0;
+}
+
 int is_batch_mode = false;
 
 void sdb_set_batch_mode(void) { is_batch_mode = true; }
@@ -214,4 +315,7 @@ void sdb_mainloop(void) {
   }
 }
 
-void init_sdb(void) { init_regex(); }
+void init_sdb(void) {
+  init_regex();
+  IFDEF(CONFIG_WATCH_POINT, init_wp_pool());
+}

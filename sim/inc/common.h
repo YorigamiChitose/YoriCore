@@ -15,4 +15,6 @@ typedef word_t paddr_t;
 #define FMT_PADDR "0x%08" PRIx32
 #define FMT_VADDR "0x%08" PRIx32
 
+extern word_t *cpu_gpr;
+
 #endif
