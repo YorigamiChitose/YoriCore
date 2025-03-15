@@ -13,7 +13,7 @@ typedef struct {
 } CSR;
 
 typedef struct {
-  word_t *gpr;
+  word_t gpr[32];
   vaddr_t pc;
   CSR csr;
   uint8_t mode;

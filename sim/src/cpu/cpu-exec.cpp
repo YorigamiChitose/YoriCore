@@ -1,12 +1,16 @@
+#include "common.h"
 #include "cpu/cpu.h"
 #include "debug.h"
+#include "difftest-def.h"
 #include "isa/isa.h"
+#include "macro.h"
+#include "monitor/monitor.h"
 #include "utils.h"
 #include "verilator/verilator.h"
 #include <cstdint>
+#include <cstdio>
 
 bool g_print_step = false;
-void refresh_cpu_next_status(void) {}
 
 static void printInst(uint32_t pc, uint32_t inst) {
   printf("pc: %008x ", pc);
@@ -16,26 +20,59 @@ static void printInst(uint32_t pc, uint32_t inst) {
   puts(buf);
 }
 
+static void trace_and_difftest(vaddr_t pc, vaddr_t npc) {
+  IFDEF(CONFIG_DIFFTEST, difftest_step(pc, npc));
+  IFDEF(CONFIG_MTRACE, if (is_change()) { npc_state.state = NPC_STOP; })
+}
+
 void exec_once(void) {
   int count_cycle = 0;
-  while (true) {
+  paddr_t pc = 0;
+  word_t inst = 0;
+  while (cpu_status.EX_WB_valid == 0) {
     step_verilator();
     refresh_verilator_status();
-    if (cpu_status.SIM_valid) {
-      cpu.pc = cpu_status.SIM_pc;
-      if (g_print_step) {
-        printInst(cpu.pc, cpu_status.SIM_inst);
-      }
-      if (cpu_status.SIM_excType == EXC_EBREAK) {
-        NPCTRAP(cpu.pc, cpu.gpr[10]);
-      }
-      break;
-    }
-    count_cycle++;
-    if (count_cycle > 100) {
+    if (count_cycle++ > 200) {
       panic("verilator simulation timeout");
     }
   }
+
+  switch (cpu_status.EX_WB_excType) {
+  case EXC_EBREAK:
+    NPCTRAP(cpu.pc, cpu.gpr[10]);
+    break;
+  case EXC_ECALL:
+    break;
+  case EXC_ILLEGAL_INST:
+    invalid_inst(cpu.pc, cpu_status.EX_WB_inst);
+    break;
+  case EXC_MRET:
+    break;
+  default:
+    break;
+  }
+
+  pc = cpu_status.EX_WB_pc;
+  inst = cpu_status.EX_WB_inst;
+  step_verilator();
+  refresh_verilator_status();
+
+  if (npc_state.state == NPC_END || npc_state.state == NPC_ABORT) {
+    return;
+  }
+
+  while (cpu_status.EX_WB_valid == 0) {
+    step_verilator();
+    refresh_verilator_status();
+    if (count_cycle++ > 200) {
+      panic("verilator simulation timeout");
+    }
+  }
+  cpu.pc = cpu_status.EX_WB_pc;
+  if (g_print_step) {
+    printInst(pc, inst);
+  }
+  trace_and_difftest(pc, cpu.pc);
 }
 
 uint64_t g_nr_guest_inst = 0;
