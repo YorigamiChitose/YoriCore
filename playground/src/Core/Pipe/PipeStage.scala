@@ -16,11 +16,11 @@ class PipeStage[T <: StageBundle](stageBundle: T) extends Module {
   val validReg = RegInit(false.B) // 数据有效信号寄存器
 
   when(!ioPipeCtrl.valid || ioPipeCtrl.flush || (ioPipeCtrl.stallPrev && !ioPipeCtrl.stallNext)) {
-    // 被命令冲刷 || 前级停止后级继续
+    // 前级未完成 || 被命令冲刷 || 前级停止后级继续
     stageReg := stageBundle.initVal() // 发送默认数据
     validReg := false.B               // 设置valid为false
   }.elsewhen(!ioPipeCtrl.stallPrev && ioPipeCtrl.valid) {
-    // 前级未完成 || 前级不停止
+    // 前级完成 || 前级不停止
     stageReg := ioPrevStage // 向后传输
     validReg := true.B      // 设置valid为true
   }

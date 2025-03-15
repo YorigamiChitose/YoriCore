@@ -28,8 +28,9 @@ $(SIM_TARGET): $(SIM_SRC_PATH) $(CHISEL_BUILD_TOP_VSRC) $(SIM_AUTOCONFIG_H)
 		-CFLAGS $(SIM_CFLAGS) \
 		-LDFLAGS $(SIM_LDFLAGS) \
 		--trace-fst \
+		--threads 8 \
 		$(SIM_FLAG)
-	make -C $(SIM_BUILD_DIR) -f V$(TOP_MODULE).mk -s
+	make -C $(SIM_BUILD_DIR) -f V$(TOP_MODULE).mk -s -j8
 	@echo -e "$(COLOR_R)--- verilator finish ---$(COLOR_NO)"
 
 $(SIM_AUTOCONFIG_H): $(SIM_AUTOCONFIG_CONFIG)
@@ -45,7 +46,7 @@ verilator: $(SIM_TARGET)
 
 run: $(SIM_TARGET)
 	@echo -e "$(COLOR_R)--- run start ---$(COLOR_NO)"
-	@cd $(SIM_BUILD_DIR) && $(SIM_TARGET) $(SIM_ARGS) $(SIM_IMG)
+	@cd $(BUILD_DIR) && $(SIM_TARGET) $(SIM_ARGS) $(SIM_IMG)
 	@echo -e "$(COLOR_R)--- run finish ---$(COLOR_NO)"
 
 wave:

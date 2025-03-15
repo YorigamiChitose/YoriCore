@@ -107,13 +107,13 @@ class PipeLineCtrl extends Module {
   ioID_EXPipeCtrl.flush := flushCode(2) // 级间冲刷信号
   ioEX_WBPipeCtrl.flush := flushCode(1) // 级间冲刷信号
 
-  ioIF_IDPipeCtrl.stallPrev := stallCode(4) // 前级暂停信号
-  ioPC_IFPipeCtrl.stallPrev := stallCode(3) // 前级暂停信号
+  ioPC_IFPipeCtrl.stallPrev := stallCode(4) // 前级暂停信号
+  ioIF_IDPipeCtrl.stallPrev := stallCode(3) // 前级暂停信号
   ioID_EXPipeCtrl.stallPrev := stallCode(2) // 前级暂停信号
   ioEX_WBPipeCtrl.stallPrev := stallCode(1) // 前级暂停信号
 
-  ioIF_IDPipeCtrl.stallNext := stallCode(3) // 后级暂停信号
-  ioPC_IFPipeCtrl.stallNext := stallCode(2) // 后级暂停信号
+  ioPC_IFPipeCtrl.stallNext := stallCode(3) // 后级暂停信号
+  ioIF_IDPipeCtrl.stallNext := stallCode(2) // 后级暂停信号
   ioID_EXPipeCtrl.stallNext := stallCode(1) // 后级暂停信号
   ioEX_WBPipeCtrl.stallNext := stallCode(0) // 后级暂停信号
 
