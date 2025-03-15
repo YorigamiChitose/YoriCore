@@ -5,7 +5,16 @@
 #include "verilator/verilator.h"
 #include <cstdint>
 
+bool g_print_step = false;
 void refresh_cpu_next_status(void) {}
+
+static void printInst(uint32_t pc, uint32_t inst) {
+  printf("pc: %008x ", pc);
+  printf("inst: %08x ", inst);
+  char buf[128] = {};
+  disassemble(buf, 128, (uint64_t)pc, (uint8_t *)&inst, 4);
+  puts(buf);
+}
 
 void exec_once(void) {
   int count_cycle = 0;
@@ -14,6 +23,9 @@ void exec_once(void) {
     refresh_verilator_status();
     if (cpu_status.SIM_valid) {
       cpu.pc = cpu_status.SIM_pc;
+      if (g_print_step) {
+        printInst(cpu.pc, cpu_status.SIM_inst);
+      }
       if (cpu_status.SIM_excType == EXC_EBREAK) {
         NPCTRAP(cpu.pc, cpu.gpr[10]);
       }
@@ -56,7 +68,6 @@ void assert_fail_msg(void) {
   exit_verilator();
 }
 
-bool g_print_step = false;
 void cpu_exec(uint64_t n) {
 #ifdef CONFIG_ITRACE_PRINT_MAXNUM
   g_print_step = (n < CONFIG_ITRACE_PRINT_MAXNUM);

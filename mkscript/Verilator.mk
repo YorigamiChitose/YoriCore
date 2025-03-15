@@ -10,7 +10,7 @@ SIM_TOOL_DIR          = $(SIM_DIR)/tool
 SIM_SRC_PATH          = $(foreach dir, $(shell find $(SIM_SRC_DIR) -maxdepth 5 -type d), $(wildcard $(dir)/*.cpp))
 SIM_FLAG              = --error-limit 0
 SIM_CFLAGS            = "-I$(SIM_INC_DIR) -g"
-SIM_LDFLAGS           = "-lreadline"
+SIM_LDFLAGS           = "-lreadline -lcapstone"
 SIM_CONFIG            = $(SIM_DIR)/verilator.vlt
 SIM_AUTOCONFIG_H      = $(SIM_INC_DIR)/autoconf/autoconf.h
 SIM_AUTOCONFIG_CONFIG = $(TOP_DIR)/.config
@@ -46,7 +46,7 @@ verilator: $(SIM_TARGET)
 
 run: $(SIM_TARGET)
 	@echo -e "$(COLOR_R)--- run start ---$(COLOR_NO)"
-	@cd $(BUILD_DIR) && $(SIM_TARGET) $(SIM_ARGS) $(SIM_IMG)
+	@cd $(TOP_DIR) && $(SIM_TARGET) $(SIM_ARGS) $(SIM_IMG)
 	@echo -e "$(COLOR_R)--- run finish ---$(COLOR_NO)"
 
 wave:

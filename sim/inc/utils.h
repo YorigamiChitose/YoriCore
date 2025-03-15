@@ -5,6 +5,8 @@
 
 bool is_exit_status_bad(void);
 void init_rand(void);
+void init_disasm(void);
+void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
 // ----------- state -----------
 
 enum { NPC_RUNNING, NPC_STOP, NPC_END, NPC_ABORT, NPC_QUIT };

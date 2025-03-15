@@ -90,6 +90,12 @@ void init_monitor(int argc, char *argv[]) {
   /* init verilator */
   init_verilator();
 
+  /* init disassembly */
+  init_disasm();
+
+  /* init sdb */
+  init_sdb();
+
   /* Display welcome message. */
   welcome();
 }
