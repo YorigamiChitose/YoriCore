@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.util._
 
 import Core._
+import Tools.Config._
 
 import Core.EXU.module.DMemBundle
 import Sim._
@@ -22,4 +23,11 @@ class Top extends Module {
   core.ioDMem <> simDMem.io.ioDMem
   simDMem.io.clock := clock
   simDMem.io.reset := reset
+
+  val SimInfoIO = if (Config.Sim.enable) Some(IO(Flipped(new SimInfoBundle))) else None
+  if (Config.Sim.enable) {
+    SimInfoIO.get <> core.SimInfoIO.get
+    SimInfoIO.get.clock := clock
+    SimInfoIO.get.reset := reset
+  }
 }

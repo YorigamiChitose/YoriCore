@@ -1,3 +1,4 @@
+#include "device/device.h"
 #include "memory/memory.h"
 #include <VTop__Dpi.h>
 #include <cstdio>

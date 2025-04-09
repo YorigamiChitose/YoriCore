@@ -20,7 +20,7 @@ class DIV extends Module {
 
   // 计算结果
   val result = MuxCase(
-    0.U(Config.Data.XLEN.W),
+    0.U((Config.Data.XLEN * 2).W),
     Seq(
       (ioDIV.divCtrl === div.DIV)  -> (ioDIV.op1.asSInt / ioDIV.op2.asSInt).asUInt, // 符号除
       (ioDIV.divCtrl === div.REM)  -> (ioDIV.op1.asSInt % ioDIV.op2.asSInt).asUInt, // 符号取余

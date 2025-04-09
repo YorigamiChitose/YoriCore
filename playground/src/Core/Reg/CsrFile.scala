@@ -45,8 +45,8 @@ class BundleMSTATUS extends Bundle {
 }
 
 class BundleMTVEC extends Bundle {
-  val causeId = UInt(Config.Csr.DataWidth.W)
-  def initVal = 0.U.asTypeOf(this)
+  val exceptionPC = UInt(Config.Csr.DataWidth.W)
+  def initVal     = 0.U.asTypeOf(this)
 }
 
 object CSR_MAP {

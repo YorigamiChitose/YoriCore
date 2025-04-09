@@ -9,6 +9,10 @@
 #define PMEM_RIGHT ((uint32_t)CONFIG_MBASE + CONFIG_MSIZE - 1)
 #define RESET_VECTOR (PMEM_LEFT + CONFIG_PC_RESET_OFFSET)
 
+#define PAGE_SHIFT 12
+#define PAGE_SIZE (1ul << PAGE_SHIFT)
+#define PAGE_MASK (PAGE_SIZE - 1)
+
 static inline bool in_pmem(uint32_t addr) {
   return (addr - CONFIG_MBASE) < CONFIG_MSIZE;
 }

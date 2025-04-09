@@ -1,5 +1,6 @@
 #include "common.h"
 #include "debug.h"
+#include "device/map.h"
 #include "macro.h"
 #include "memory/memory.h"
 #include <cstdint>
@@ -26,6 +27,7 @@ uint32_t pmem_read(uint32_t addr, int len) {
   if (in_pmem(addr)) {
     return host_read(guest_to_host(addr), len);
   }
+  IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
   out_of_bound(addr);
   return 0;
 }
@@ -35,5 +37,6 @@ void pmem_write(uint32_t addr, int len, uint32_t data) {
     host_write(guest_to_host(addr), len, data);
     return;
   }
+  IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return;);
   out_of_bound(addr);
 }

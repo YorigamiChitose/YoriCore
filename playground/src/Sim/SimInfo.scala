@@ -36,7 +36,8 @@ class SimInfoBundle extends Bundle {
   val SI_EX_WB = new SI_EX_WB
 }
 
-class SimInfo extends BlackBox with HasBlackBoxResource {
-  val io = IO(new SimInfoBundle)
-  addResource("/SimInfo.sv")
+class SimInfo extends Module {
+  val io_in  = IO(new SimInfoBundle)
+  val io_out = IO(Flipped(new SimInfoBundle))
+  io_out <> io_in
 }

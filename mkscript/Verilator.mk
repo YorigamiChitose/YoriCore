@@ -9,26 +9,23 @@ SIM_INC_DIR           = $(SIM_DIR)/inc
 SIM_TOOL_DIR          = $(SIM_DIR)/tool
 SIM_SRC_PATH          = $(foreach dir, $(shell find $(SIM_SRC_DIR) -maxdepth 5 -type d), $(wildcard $(dir)/*.cpp))
 SIM_FLAG              = --error-limit 0
-SIM_CFLAGS            = "-I$(SIM_INC_DIR) -g"
-SIM_LDFLAGS           = "-lreadline -lcapstone"
-SIM_CONFIG            = $(SIM_DIR)/verilator.vlt
+SIM_CFLAGS            = "-I$(SIM_INC_DIR) -O2"
+SIM_LDFLAGS           = "-lreadline -lcapstone -lSDL2"
 SIM_AUTOCONFIG_H      = $(SIM_INC_DIR)/autoconf/autoconf.h
 SIM_AUTOCONFIG_CONFIG = $(TOP_DIR)/.config
 
-SO_PATH ?= $(NEMU_HOME)/build/riscv32-nemu-interpreter-so
-SIM_ARGS ?= --diff=$(SO_PATH) --port=1234
+SIM_ARGS ?= 
 
 $(SIM_TARGET): $(SIM_SRC_PATH) $(CHISEL_BUILD_TOP_VSRC) $(SIM_AUTOCONFIG_H)
 	@echo -e "$(COLOR_R)--- verilator start  ---$(COLOR_NO)"
 	verilator \
-		--cc $(SIM_CONFIG) $(CHISEL_BUILD_VSRC) \
+		--cc $(CHISEL_BUILD_VSRC) \
 		--exe $(SIM_SRC_PATH) \
 		-Mdir $(SIM_BUILD_DIR) \
 		-top $(TOP_MODULE) \
 		-CFLAGS $(SIM_CFLAGS) \
 		-LDFLAGS $(SIM_LDFLAGS) \
 		--trace-fst \
-		--threads 8 \
 		$(SIM_FLAG)
 	make -C $(SIM_BUILD_DIR) -f V$(TOP_MODULE).mk -s -j8
 	@echo -e "$(COLOR_R)--- verilator finish ---$(COLOR_NO)"

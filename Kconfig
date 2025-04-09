@@ -7,7 +7,7 @@ endmenu
 
 
 menu "Testing"
-config WATCH_POINT
+menuconfig WATCH_POINT
   bool "Enable watch point"
   default y
 
@@ -21,13 +21,7 @@ config WP_EXPR_SIZE
   hex "Watch point expr size"
   default 0x40
 
-config DIFFTEST
-  bool "Enable differential testing"
-  default n
-  help
-    Enable differential testing with a reference design.
-
-config TRACE
+menuconfig TRACE
   bool "Enable tracer"
   default y
 
@@ -51,7 +45,7 @@ config ITRACE_PRINT_MAXNUM
   hex "Instruction tracer max print num"
   default 0x10
 
-config MTRACE
+menuconfig MTRACE
   depends on TRACE
   bool "Enable memory tracer"
   default y
@@ -61,7 +55,7 @@ config MTRACE_BSIZE
   hex "Memory tracer buffer size"
   default 0x10
 
-config FTRACE
+menuconfig FTRACE
   depends on TRACE
   bool "Enable function tracer"
   default y
@@ -83,3 +77,4 @@ config FTRACE_BSIZE
 endmenu
 
 source "sim/src/memory/Kconfig"
+source "sim/src/device/Kconfig"
