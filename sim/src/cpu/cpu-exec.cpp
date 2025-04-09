@@ -1,7 +1,7 @@
 #include "common.h"
 #include "cpu/cpu.h"
 #include "debug.h"
-#include "difftest-def.h"
+#include "device/device.h"
 #include "isa/isa.h"
 #include "macro.h"
 #include "monitor/monitor.h"
@@ -21,8 +21,7 @@ static void printInst(uint32_t pc, uint32_t inst) {
 }
 
 static void trace_and_difftest(vaddr_t pc, vaddr_t npc) {
-  IFDEF(CONFIG_DIFFTEST, difftest_step(pc, npc));
-  IFDEF(CONFIG_MTRACE, if (is_change()) { npc_state.state = NPC_STOP; })
+  IFDEF(CONFIG_WATCH_POINT, if (is_change()) { npc_state.state = NPC_STOP; })
 }
 
 void exec_once(void) {
@@ -84,6 +83,7 @@ void execute(uint64_t n) {
     if (npc_state.state != NPC_RUNNING) {
       break;
     }
+    IFDEF(CONFIG_DEVICE, device_update());
   }
 }
 

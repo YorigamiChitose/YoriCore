@@ -1,6 +1,6 @@
 #include "monitor/monitor.h"
 #include "debug.h"
-#include "difftest-def.h"
+#include "device/device.h"
 #include "isa/isa.h"
 #include "macro.h"
 #include "memory/memory.h"
@@ -93,14 +93,14 @@ void init_monitor(int argc, char *argv[]) {
   /* init mem */
   init_mem();
 
+  /* init device */
+  IFDEF(CONFIG_DEVICE, init_device());
+
   /* init isa */
   init_isa();
 
   /* read img */
   long img_size = load_img();
-
-  /* init difftest */
-  IFDEF(CONFIG_DIFFTEST, init_difftest(diff_so_file, img_size, difftest_port));
 
   /* init verilator */
   init_verilator();

@@ -12,6 +12,7 @@ typedef int32_t sword_t;
 
 typedef word_t vaddr_t;
 typedef word_t paddr_t;
+typedef uint16_t ioaddr_t;
 #define FMT_PADDR "0x%08" PRIx32
 #define FMT_VADDR "0x%08" PRIx32
 

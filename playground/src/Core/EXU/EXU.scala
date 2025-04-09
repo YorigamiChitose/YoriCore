@@ -124,7 +124,7 @@ class EXU extends Module {
       (ioIDU.divCtrl =/= div.NOP)       -> DIVReady,
       (ioIDU.memCtrl =/= mem.NOP)       -> LSUReady,
       (ioIDU.mulCtrl =/= mul.NOP)       -> MULReady,
-      (ioIDU.excType === exc.EBREAK)    -> true.B // for npc
+      (ioIDU.excType =/= exc.NOP)       -> true.B // TODO: 是否需要处理非法指令？未知
     )
   )
   ioCtrl.busy       := (ioIDU.mulCtrl =/= mul.NOP) && !LSUReady
