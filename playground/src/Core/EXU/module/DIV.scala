@@ -19,7 +19,7 @@ class DIV extends Module {
   val ioDIV = IO(new DIVBundle()) // 除法器IO
 
   val sIdle :: sStart :: sFinish :: Nil = Enum(3)
-  val stateReg                          = RegInit(sIdle)
+  val state                             = RegInit(sIdle)
 
   val divisorReg = RegInit(0.U((2 * Config.Data.XLEN).W)) // 除数寄存器
 
@@ -33,12 +33,12 @@ class DIV extends Module {
     val rem = Bool()
   })) // 符号标志寄存器
 
-  switch(stateReg) {
+  switch(state) {
     is(sIdle) {
       when(ioDIV.flush) {
-        stateReg := sIdle
+        state := sIdle
       }.elsewhen(ioDIV.divCtrl =/= div.NOP) {
-        stateReg       := sStart
+        state          := sStart
         remainderReg   := MuxCase(
           0.U(Config.Data.XLEN.W),
           Seq(
@@ -89,7 +89,7 @@ class DIV extends Module {
     }
     is(sStart) {
       when(countReg === 0.U) {
-        stateReg     := sFinish
+        state        := sFinish
         quotientReg  := Mux(isNegative.quo, -quotientReg, quotientReg)
         remainderReg := Mux(isNegative.rem, -remainderReg, remainderReg)
       }.otherwise {
@@ -100,7 +100,7 @@ class DIV extends Module {
       }
     }
     is(sFinish) {
-      stateReg := sIdle
+      state := sIdle
     }
   }
 
@@ -113,5 +113,5 @@ class DIV extends Module {
       (ioDIV.divCtrl === div.REMU) -> remainderReg
     )
   )
-  ioDIV.ready  := (stateReg === sFinish)
+  ioDIV.ready  := (state === sFinish)
 }

@@ -16,19 +16,80 @@ class MULBundle extends Bundle {
 }
 
 class MUL extends Module {
-  val ioMUL = IO(new MULBundle()) // 乘法器IO
+  val ioMUL = IO(new MULBundle())
 
-  // 计算结果
-  val result = MuxCase(
-    0.U(Config.Data.XLEN.W),
+  val sIdle :: sStart :: sFinish :: Nil = Enum(3)
+
+  val state = RegInit(sIdle)
+
+  val multiplierReg   = RegInit(0.U((Config.Data.XLEN + 3).W))
+  val multiplicandReg = RegInit(0.U((Config.Data.XLEN * 2).W))
+  val resultReg       = RegInit(0.U((Config.Data.XLEN * 2).W))
+  val countReg        = RegInit(0.U(log2Ceil((Config.Data.XLEN + 3) / 2).W))
+
+  switch(state) {
+    is(sIdle) {
+      when(ioMUL.flush) {
+        state := sIdle
+      }.elsewhen(ioMUL.mulCtrl =/= mul.NOP) {
+        state         := sStart
+        resultReg     := 0.U
+        multiplierReg := MuxCase(
+          0.U,
+          Seq(
+            (ioMUL.mulCtrl === mul.MUL)    -> Cat(Fill(2, ioMUL.op1(Config.Data.XLEN - 1)), ioMUL.op1, 0.U),
+            (ioMUL.mulCtrl === mul.MULH)   -> Cat(Fill(2, ioMUL.op1(Config.Data.XLEN - 1)), ioMUL.op1, 0.U),
+            (ioMUL.mulCtrl === mul.MULHU)  -> Cat(0.U(2.W), ioMUL.op1, 0.U),
+            (ioMUL.mulCtrl === mul.MULHSU) -> Cat(Fill(2, ioMUL.op1(Config.Data.XLEN - 1)), ioMUL.op1, 0.U)
+          )
+        )
+
+        multiplicandReg := MuxCase(
+          0.U,
+          Seq(
+            (ioMUL.mulCtrl === mul.MUL)    -> Cat(Fill(Config.Data.XLEN, ioMUL.op2(Config.Data.XLEN - 1)), ioMUL.op2),
+            (ioMUL.mulCtrl === mul.MULH)   -> Cat(Fill(Config.Data.XLEN, ioMUL.op2(Config.Data.XLEN - 1)), ioMUL.op2),
+            (ioMUL.mulCtrl === mul.MULHU)  -> Cat(0.U(Config.Data.XLEN.W), ioMUL.op2),
+            (ioMUL.mulCtrl === mul.MULHSU) -> Cat(0.U(Config.Data.XLEN.W), ioMUL.op2)
+          )
+        )
+
+        countReg := ((Config.Data.XLEN + 3) / 2).U
+      }
+    }
+    is(sStart) {
+      when(countReg === 0.U) {
+        state := sFinish
+      }.otherwise {
+        countReg  := countReg - 1.U
+        resultReg := resultReg + MuxLookup(multiplierReg(2, 0), 0.U)(
+          Seq(
+            "b000".U -> 0.U,
+            "b001".U -> multiplicandReg,
+            "b010".U -> multiplicandReg,
+            "b011".U -> (multiplicandReg << 1.U),
+            "b100".U -> ((-multiplicandReg) << 1.U),
+            "b101".U -> (-multiplicandReg),
+            "b110".U -> (-multiplicandReg),
+            "b111".U -> 0.U
+          )
+        )
+      }
+      multiplicandReg := multiplicandReg << 2.U
+      multiplierReg   := multiplierReg >> 2.U
+    }
+    is(sFinish) {
+      state := sIdle
+    }
+  }
+  ioMUL.result := MuxCase(
+    0.U,
     Seq(
-      (ioMUL.mulCtrl === mul.MUL)    -> (ioMUL.op1.asUInt * ioMUL.op2.asUInt).asUInt,                                                                                    // 无符号乘法
-      (ioMUL.mulCtrl === mul.MULH)   -> ((ioMUL.op1.asSInt.pad(Config.Data.XLEN * 2) * ioMUL.op2.asSInt.pad(Config.Data.XLEN * 2)).asSInt >> Config.Data.XLEN.U).asUInt, // 高位符号乘法
-      (ioMUL.mulCtrl === mul.MULHU)  -> ((ioMUL.op1.asUInt.pad(Config.Data.XLEN * 2) * ioMUL.op2.asUInt.pad(Config.Data.XLEN * 2)).asUInt >> Config.Data.XLEN.U).asUInt, // 高位无符号乘法
-      (ioMUL.mulCtrl === mul.MULHSU) -> ((ioMUL.op1.asSInt.pad(Config.Data.XLEN * 2) * ioMUL.op2.asUInt.pad(Config.Data.XLEN * 2)).asSInt >> Config.Data.XLEN.U).asUInt  // 高位有符号乘无符号
+      (ioMUL.mulCtrl === mul.MUL)    -> resultReg(Config.Data.XLEN - 1, 0),
+      (ioMUL.mulCtrl === mul.MULH)   -> resultReg(Config.Data.XLEN * 2 - 1, Config.Data.XLEN),
+      (ioMUL.mulCtrl === mul.MULHU)  -> resultReg(Config.Data.XLEN * 2 - 1, Config.Data.XLEN),
+      (ioMUL.mulCtrl === mul.MULHSU) -> resultReg(Config.Data.XLEN * 2 - 1, Config.Data.XLEN)
     )
   )
-
-  ioMUL.result := result // 计算结果
-  ioMUL.ready  := true.B // 准备完成
+  ioMUL.ready  := (state === sFinish)
 }
