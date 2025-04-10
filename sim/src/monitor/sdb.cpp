@@ -47,6 +47,7 @@ static int cmd_x(char *args);
 static int cmd_p(char *args);
 static int cmd_w(char *args);
 static int cmd_d(char *args);
+static int cmd_ps(char *args);
 // static int cmd_trace(char *args);
 
 static struct {
@@ -65,6 +66,7 @@ static struct {
     {"p", "Usage: p\t[str]\t\t - Calculate.", cmd_p},
     {"w", "Usage: w\t[str]\t\t - Set a new watchpoint.", cmd_w},
     {"d", "Usage: d\t[int]\t\t - Delete a watchpoint.", cmd_d},
+    {"ps", "Usage: ps\t\t\t - Print the step.", cmd_ps},
     // {"trace", "Usage: trace\t[str]\t\t - Check the inst.", cmd_trace}
 };
 
@@ -268,6 +270,13 @@ static int cmd_w(char *args) {
 #else
   printf("Watch point not enabled\n");
 #endif
+  return 0;
+}
+
+static int cmd_ps(char *args) {
+  extern uint64_t g_nr_guest_inst;
+
+  printf("Now step: %lu\n", g_nr_guest_inst);
   return 0;
 }
 

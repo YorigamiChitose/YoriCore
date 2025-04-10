@@ -127,7 +127,8 @@ class EXU extends Module {
       (ioIDU.excType =/= exc.NOP)       -> true.B // TODO: 是否需要处理非法指令？未知
     )
   )
-  ioCtrl.busy       := (ioIDU.mulCtrl =/= mul.NOP) && !LSUReady
+
+  ioCtrl.busy := (ioIDU.memCtrl =/= mem.NOP) && !LSUReady || (ioIDU.divCtrl =/= div.NOP) && !DIVReady || (ioIDU.mulCtrl =/= mul.NOP) && !MULReady
 
   // 前递IO
   ioEXUForwarding.isLoad   := (ioIDU.memCtrl === mem.LB) ||
