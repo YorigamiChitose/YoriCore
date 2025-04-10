@@ -136,13 +136,13 @@ class EXU extends Module {
     (ioIDU.memCtrl === mem.LH) ||
     (ioIDU.memCtrl === mem.LHU) ||
     (ioIDU.memCtrl === mem.LW)
-  ioEXUForwarding.isMD     := false.B          // TODO: (ioIDU.divCtrl =/= div.NOP) || (ioIDU.mulCtrl =/= mul.NOP) // 当前为乘除任务
-  ioEXUForwarding.rd.en    := ioIDU.rdEn       // 目的寄存器使能
-  ioEXUForwarding.rd.addr  := ioIDU.rdAddr     // 目的寄存器地址
-  ioEXUForwarding.rd.data  := EXUResult        // 目的寄存器数据
-  ioEXUForwarding.csr.en   := ioIDU.csrWriteEn // csr使能
-  ioEXUForwarding.csr.addr := ioIDU.csrAddr    // csr地址
-  ioEXUForwarding.csr.data := CSRResult        // csr数据
+  ioEXUForwarding.isMD     := (ioIDU.divCtrl =/= div.NOP) || (ioIDU.mulCtrl =/= mul.NOP) // 当前为乘除任务
+  ioEXUForwarding.rd.en    := ioIDU.rdEn                                                 // 目的寄存器使能
+  ioEXUForwarding.rd.addr  := ioIDU.rdAddr                                               // 目的寄存器地址
+  ioEXUForwarding.rd.data  := EXUResult                                                  // 目的寄存器数据
+  ioEXUForwarding.csr.en   := ioIDU.csrWriteEn                                           // csr使能
+  ioEXUForwarding.csr.addr := ioIDU.csrAddr                                              // csr地址
+  ioEXUForwarding.csr.data := CSRResult                                                  // csr数据
 
   // DMem IO
   ioDMem <> LSU.ioDMem
