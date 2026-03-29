@@ -5,11 +5,11 @@
 !/sim/
 !/.github/
 !/mkscript/
+!/resources/
 
 !/Makefile
 !/.gitignore
 !/.scalafmt.conf
-!/build.sc
+!/build.mill
 !/README.md
-!/.mill-version
 !/Kconfig

@@ -1,26 +1,18 @@
-.PHONY: test help verilog
+.PHONY: chisel
 
-# Chisel Config
+# Chisel.mk
+MODULE ?= $(TOP_MODULE)
 CHISEL_BUILD_DIR      = $(BUILD_DIR)/chisel
-CHISEL_BUILD_TOP_VSRC = $(CHISEL_BUILD_DIR)/$(TOP_MODULE).sv
-CHISEL_BUILD_VSRC     = $(wildcard $(CHISEL_BUILD_DIR)/*.sv)
-CHISEL_DIR            = $(TOP_DIR)/src
-CHISEL_MAIN_DIR       = $(CHISEL_DIR)/main
-CHISEL_TEST_DIR       = $(CHISEL_DIR)/test
-CHISEL_SRC_PATH       = $(foreach dir, $(shell find $(CHISEL_MAIN_DIR) -maxdepth 5 -type d), $(wildcard $(dir)/*.scala)) \
-												$(wildcard $(CHISEL_MAIN_DIR)/resources/*.sv)
+CHISEL_TOP_MODULE     = $(CHISEL_BUILD_DIR)/$(MODULE).sv
+CHISEL_SRC_DIR        = $(TOP_DIR)/src
+CHISEL_SRC_FILES      = $(foreach dir, $(shell find $(CHISEL_SRC_DIR) -maxdepth 5 -type d 2>/dev/null), $(wildcard $(dir)/*.scala))
 CHISEL_TOOL           = Tools.build
 
-$(CHISEL_BUILD_TOP_VSRC): $(CHISEL_SRC_PATH)
-	@echo "$(COLOR_R)--- verilog start  ---$(COLOR_NO)"
+$(CHISEL_TOP_MODULE): $(CHISEL_SRC_FILES)
+	@echo "$(COLOR_R)--- Building $(subst $(TOP_DIR)/,,$(CHISEL_TOP_MODULE)) ---$(COLOR_NO)"
 	@mkdir -p $(CHISEL_BUILD_DIR)
-	mill -i $(PRJ).runMain $(CHISEL_TOOL) --split-verilog -td $(CHISEL_BUILD_DIR)
-	@echo "$(COLOR_R)--- verilog finish ---$(COLOR_NO)"
+	mill -i runMain $(CHISEL_TOOL) --target-dir $(CHISEL_BUILD_DIR) --split-verilog
+	@echo "$(COLOR_G)--- $(subst $(TOP_DIR)/,,$(CHISEL_TOP_MODULE)) built ---$(COLOR_NO)"
 
-verilog: $(CHISEL_BUILD_TOP_VSRC)
+chisel: $(CHISEL_TOP_MODULE)
 
-test:
-	mill -i $(PRJ).test
-
-help:
-	mill -i $(PRJ).runMain Elaborate --help

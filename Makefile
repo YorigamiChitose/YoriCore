@@ -1,6 +1,6 @@
+# 顶层路径
 TOP_DIR   = $(PWD)
 BUILD_DIR = $(TOP_DIR)/build
-PRJ = playground
 TOP_MODULE = Top
 
 COLOR_R  := \e[31m
