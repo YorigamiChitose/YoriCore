@@ -13,18 +13,22 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Install make and verilator
+    - name: Install tools
       run: |
         sudo apt-get update
-        sudo apt-get install -y make verilator
+        sudo apt-get install -y make verilator libreadline-dev python3-kconfiglib
 
-    - name: Clone lefou/millw repository
+    - name: Install mill
       run: |
-        git clone https://github.com/lefou/millw.git
-        sudo ln -sf $(pwd)/millw/millw /usr/bin/mill
+        curl -L https://repo1.maven.org/maven2/com/lihaoyi/mill-dist/1.1.5/mill-dist-1.1.5-mill.sh -o mill
+        chmod +x mill
+        sudo ln -sf $(pwd)/mill /usr/bin/mill
 
-    - name: Run make checkformat
-      run: make checkformat
+    - name: Run make check format
+      run: make check
 
     - name: Run make test
       run: make test
+
+    - name: Build simulator
+      run: make verilator
