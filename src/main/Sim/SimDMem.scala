@@ -11,7 +11,7 @@ class SimDMemBundle extends Bundle {
   val ioDMem = new DMemBundle
 }
 
-class SimDMem extends BlackBox with HasBlackBoxResource {
+class SimDMem extends ExtModule {
   val io = IO(new SimDMemBundle)
-  addResource("/SimDMem.sv")
+  // addResource("/SimDMem.sv")
 }

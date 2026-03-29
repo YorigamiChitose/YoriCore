@@ -1,13 +1,12 @@
-.PHONY: clean clean-c clean-s clean-mill
+.PHONY: clean clean-c clean-v clean-mill
 
-clean: clean-c clean-s
+clean: clean-c clean-v
 
 clean-c:
-	rm -rf $(CHISEL_BUILD_DIR)
+	rm -rf $(subst $(TOP_DIR)/,,$(CHISEL_BUILD_DIR))
 
-clean-s:
-	rm -rf $(SIM_BUILD_DIR)
-	rm -rf $(SIM_AUTOCONFIG_H)
+clean-v:
+	rm -rf $(subst $(TOP_DIR)/,,$(VERILATOR_BUILD_DIR))
 
 clean-mill:
-	mill clean
+	mill - clean

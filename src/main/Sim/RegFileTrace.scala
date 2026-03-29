@@ -14,7 +14,7 @@ class RegFileTraceBundle extends Bundle {
   val data  = Input(UInt(Config.Reg.Width.W))
 }
 
-class RegFileTrace extends BlackBox with HasBlackBoxResource {
+class RegFileTrace extends ExtModule {
   val io = IO(new RegFileTraceBundle)
-  addResource("/RegFileTrace.sv")
+  // addResource("/RegFileTrace.sv")
 }

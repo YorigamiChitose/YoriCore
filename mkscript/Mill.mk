@@ -1,7 +1,13 @@
 .PHONY: reformat checkformat
 
-reformat:
+help:
+	mill -i __.help
+
+test:
+	mill -i __.test
+
+fmt:
 	mill -i __.reformat
 
-checkformat:
+check:
 	mill -i __.checkFormat
