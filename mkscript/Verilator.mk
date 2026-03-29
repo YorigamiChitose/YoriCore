@@ -35,6 +35,12 @@ $(VERILATOR_TARGET): $(VERILATOR_VSRC_FILES) $(VERILATOR_SRC_FILES) $(CHISEL_TOP
 
 verilator: $(VERILATOR_TARGET)
 
+$(AUTOCONFIG_CONFIG):
+	@echo "$(COLOR_R)--- Building $(subst $(TOP_DIR)/,,$(AUTOCONFIG_CONFIG)) ---$(COLOR_NO)"
+	python3 /usr/lib/python3/dist-packages/savedefconfig.py
+	python3 /usr/lib/python3/dist-packages/defconfig.py defconfig
+	@echo "$(COLOR_G)--- $(subst $(TOP_DIR)/,,$(AUTOCONFIG_CONFIG)) built ---$(COLOR_NO)"
+
 $(AUTOCONFIG_H): $(AUTOCONFIG_CONFIG)
 	@echo "$(COLOR_R)--- Building $(subst $(TOP_DIR)/,,$(AUTOCONFIG_H)) ---$(COLOR_NO)"
 	@mkdir -p $(VERILATOR_INC_DIR)/autoconf
