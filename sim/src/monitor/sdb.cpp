@@ -147,7 +147,9 @@ static int cmd_si(char *args) {
 
 static int cmd_sr(char *args) {
   cpu_exec(1);
-  isa_reg_display();
+  if (npc_state.state != NPC_END) {
+    isa_reg_display();
+  }
   return 0;
 }
 
