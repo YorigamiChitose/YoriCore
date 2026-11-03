@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include <regex.h>
 
+static bool eval_ok;
+
 enum {
   TK_NOTYPE = 256,
   TK_EQ,
@@ -38,32 +40,30 @@ static struct rule {
   const char *regex;
   int token_type;
 } rules[] = {
-    {"0[x,X][0-9,a-f,A-F]+", TK_HEXNUM},             // hex number
-    {"\\$[0-9,\\$,a-z][a-z,0-9]{0,2}", TK_REGISTER}, // register
-    {"[0-9]+", TK_NUM},                              // number
-    {" +", TK_NOTYPE},                               // spaces
-    {"\\+", TK_PLUS},                                // '+'
-    {"\\-", TK_MINUS},                               // '-'
-    {"\\*", TK_TIMES},                               // '*'
-    {"\\/", TK_DIVIDE},                              // '/'
-    {"\\%", TK_REMAINDER},                           // '%'
-    {"\\(", TK_PAR_S},                               // '('
-    {"\\)", TK_PAR_E},                               // ')'
-    {" +", TK_NOTYPE},                               // ' '
-    {"==", TK_EQ},                                   // '=='
-    {"!=", TK_NOTEQ},                                // '!='
-    {"<=", TK_LESS_EQ},                              // '<='
-    {">=", TK_BIGGER_EQ},                            // '>='
-    {"<<", TK_LEFTMOVE},                             // '<<'
-    {">>", TK_RIGHTMOVE},                            // '>>'
-    {"<", TK_LESS},                                  // '<'
-    {">", TK_BIGGER},                                // '>'
-    {"&&", TK_AND},                                  // '&&'
-    {"\\|\\|", TK_OR},                               // '||'
-    {"!", TK_NOT},                                   // '!'
-    {"m[a-z]+", TK_CSR},                             // csr
-    {"pc", TK_PC},                                   // csr
-    {"==", TK_EQ},                                   // equal
+    {"0[xX][0-9a-fA-F]+", TK_HEXNUM},             // hex number
+    {"\\$[a-zA-Z0-9]+", TK_REGISTER},             // register
+    {"[0-9]+", TK_NUM},                           // number
+    {" +", TK_NOTYPE},                            // spaces
+    {"\\+", TK_PLUS},                             // '+'
+    {"\\-", TK_MINUS},                            // '-'
+    {"\\*", TK_TIMES},                            // '*'
+    {"\\/", TK_DIVIDE},                           // '/'
+    {"\\%", TK_REMAINDER},                        // '%'
+    {"\\(", TK_PAR_S},                            // '('
+    {"\\)", TK_PAR_E},                            // ')'
+    {"==", TK_EQ},                                // '=='
+    {"!=", TK_NOTEQ},                             // '!='
+    {"<=", TK_LESS_EQ},                           // '<='
+    {">=", TK_BIGGER_EQ},                         // '>='
+    {"<<", TK_LEFTMOVE},                          // '<<'
+    {">>", TK_RIGHTMOVE},                         // '>>'
+    {"<", TK_LESS},                               // '<'
+    {">", TK_BIGGER},                             // '>'
+    {"&&", TK_AND},                               // '&&'
+    {"\\|\\|", TK_OR},                            // '||'
+    {"!", TK_NOT},                                // '!'
+    {"m[a-z]+", TK_CSR},                          // csr
+    {"pc", TK_PC},                                // pc
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -100,15 +100,11 @@ int get_operator_priority(int operator_type);
 int cut_expression(int start, int end);
 bool pair_first_bracket(int start, int end);
 
-bool is_only(int addr);
-int get_operator_priority(int operator_type);
-int cut_expression(int start, int end);
-bool pair_first_bracket(int start, int end);
-
 static bool make_token(char *e) {
   int position = 0;
   int i;
   regmatch_t pmatch;
+
   memset(tokens, 0, sizeof(tokens));
   nr_token = 0;
 
@@ -120,6 +116,15 @@ static bool make_token(char *e) {
         int substr_len = pmatch.rm_eo;
 
         position += substr_len;
+
+        if (nr_token >= TOKENS_SIZE) {
+          Log("Error! Too many tokens.");
+          return false;
+        }
+        if (substr_len >= TOKENSTR_SIZE) {
+          Log("Error! Token too long.");
+          return false;
+        }
 
         switch (rules[i].token_type) {
         case TK_DIVIDE:
@@ -184,12 +189,13 @@ static bool make_token(char *e) {
 word_t expression_value(int start, int end) {
   if (start > end) {
     Log("Error! Expression position error.");
-    assert(0);
+    eval_ok = false;
+    return 0;
   }
-  int cut_add = cut_expression(start, end);
   if (pair_first_bracket(start, end)) {
     return expression_value(start + 1, end - 1);
-  } else if (start == end) {
+  }
+  if (start == end) {
     word_t answer = 0;
     bool flag = true;
     switch (tokens[start].type) {
@@ -203,10 +209,9 @@ word_t expression_value(int start, int end) {
       answer = isa_reg_str2val(tokens[start].str + 1, &flag);
       if (flag) {
         return answer;
-      } else {
-        assert(0);
       }
-      break;
+      eval_ok = false;
+      return 0;
     case TK_CSR:
       if (!strcmp(tokens[start].str, "mepc")) {
         return cpu.csr.mepc;
@@ -217,94 +222,105 @@ word_t expression_value(int start, int end) {
       if (!strcmp(tokens[start].str, "mstatus")) {
         return cpu.csr.mstatus;
       }
+      if (!strcmp(tokens[start].str, "mtvec")) {
+        return cpu.csr.mtvec;
+      }
       break;
     case TK_PC:
       return cpu.pc;
-      break;
     default:
-      assert(0);
+      break;
     }
-  } else {
-    switch (tokens[cut_add].type) {
-    case TK_MINUS_ONLY:
-      return (-1) * expression_value(cut_add + 1, end);
-      break;
-    case TK_TIMES_ONLY:
-      return pmem_read(expression_value(cut_add + 1, end), 4);
-      break;
-    case TK_NOT:
-      return !expression_value(cut_add + 1, end);
-      break;
-
-    case TK_PLUS:
-      return expression_value(start, cut_add - 1) +
-             expression_value(cut_add + 1, end);
-      break;
-    case TK_MINUS:
-      return expression_value(start, cut_add - 1) -
-             expression_value(cut_add + 1, end);
-      break;
-    case TK_TIMES:
-      return expression_value(start, cut_add - 1) *
-             expression_value(cut_add + 1, end);
-      break;
-    case TK_REMAINDER:
-      Assert(expression_value(cut_add + 1, end) != 0,
-             "Error! Number division by zero.");
-      return expression_value(start, cut_add - 1) %
-             expression_value(cut_add + 1, end);
-      break;
-    case TK_DIVIDE:
-      Assert(expression_value(cut_add + 1, end) != 0,
-             "Error! Number division by zero.");
-      return expression_value(start, cut_add - 1) /
-             expression_value(cut_add + 1, end);
-      break;
-    case TK_BIGGER:
-      return (expression_value(start, cut_add - 1) >
-              expression_value(cut_add + 1, end));
-      break;
-    case TK_LESS:
-      return (expression_value(start, cut_add - 1) <
-              expression_value(cut_add + 1, end));
-      break;
-    case TK_BIGGER_EQ:
-      return (expression_value(start, cut_add - 1) >=
-              expression_value(cut_add + 1, end));
-      break;
-    case TK_LESS_EQ:
-      return (expression_value(start, cut_add - 1) <=
-              expression_value(cut_add + 1, end));
-      break;
-    case TK_RIGHTMOVE:
-      return (expression_value(start, cut_add - 1) >>
-              expression_value(cut_add + 1, end));
-      break;
-    case TK_LEFTMOVE:
-      return (expression_value(start, cut_add - 1)
-              << expression_value(cut_add + 1, end));
-      break;
-    case TK_NOTEQ:
-      return (expression_value(start, cut_add - 1) !=
-              expression_value(cut_add + 1, end));
-      break;
-    case TK_EQ:
-      return (expression_value(start, cut_add - 1) ==
-              expression_value(cut_add + 1, end));
-      break;
-    case TK_AND:
-      return (expression_value(start, cut_add - 1) &&
-              expression_value(cut_add + 1, end));
-      break;
-    case TK_OR:
-      return (expression_value(start, cut_add - 1) ||
-              expression_value(cut_add + 1, end));
-      break;
-    default:
-      assert(0);
-    }
+    Log("Error! Invalid expression.");
+    eval_ok = false;
+    return 0;
   }
-  assert(0);
+
+  int cut_add = cut_expression(start, end);
+  if (cut_add == -1) {
+    Log("Error! Invalid expression.");
+    eval_ok = false;
+    return 0;
+  }
+
+  switch (tokens[cut_add].type) {
+  case TK_MINUS_ONLY:
+    return (word_t)(-1) * expression_value(cut_add + 1, end);
+  case TK_TIMES_ONLY:
+    return pmem_read(expression_value(cut_add + 1, end), 4);
+  case TK_NOT:
+    return !expression_value(cut_add + 1, end);
+
+  case TK_PLUS:
+    return expression_value(start, cut_add - 1) +
+           expression_value(cut_add + 1, end);
+  case TK_MINUS:
+    return expression_value(start, cut_add - 1) -
+           expression_value(cut_add + 1, end);
+  case TK_TIMES:
+    return expression_value(start, cut_add - 1) *
+           expression_value(cut_add + 1, end);
+  case TK_REMAINDER: {
+    word_t rhs = expression_value(cut_add + 1, end);
+    if (!eval_ok) {
+      return 0;
+    }
+    if (rhs == 0) {
+      Log("Error! Number division by zero.");
+      eval_ok = false;
+      return 0;
+    }
+    return expression_value(start, cut_add - 1) % rhs;
+  }
+  case TK_DIVIDE: {
+    word_t rhs = expression_value(cut_add + 1, end);
+    if (!eval_ok) {
+      return 0;
+    }
+    if (rhs == 0) {
+      Log("Error! Number division by zero.");
+      eval_ok = false;
+      return 0;
+    }
+    return expression_value(start, cut_add - 1) / rhs;
+  }
+  case TK_BIGGER:
+    return (expression_value(start, cut_add - 1) >
+            expression_value(cut_add + 1, end));
+  case TK_LESS:
+    return (expression_value(start, cut_add - 1) <
+            expression_value(cut_add + 1, end));
+  case TK_BIGGER_EQ:
+    return (expression_value(start, cut_add - 1) >=
+            expression_value(cut_add + 1, end));
+  case TK_LESS_EQ:
+    return (expression_value(start, cut_add - 1) <=
+            expression_value(cut_add + 1, end));
+  case TK_RIGHTMOVE:
+    return (expression_value(start, cut_add - 1) >>
+            expression_value(cut_add + 1, end));
+  case TK_LEFTMOVE:
+    return (expression_value(start, cut_add - 1)
+            << expression_value(cut_add + 1, end));
+  case TK_NOTEQ:
+    return (expression_value(start, cut_add - 1) !=
+            expression_value(cut_add + 1, end));
+  case TK_EQ:
+    return (expression_value(start, cut_add - 1) ==
+            expression_value(cut_add + 1, end));
+  case TK_AND:
+    return (expression_value(start, cut_add - 1) &&
+            expression_value(cut_add + 1, end));
+  case TK_OR:
+    return (expression_value(start, cut_add - 1) ||
+            expression_value(cut_add + 1, end));
+  default:
+    break;
+  }
+
+  Log("Error! Invalid expression.");
+  eval_ok = false;
+  return 0;
 }
 
 bool is_only(int addr) {
@@ -312,13 +328,25 @@ bool is_only(int addr) {
     return true;
   }
   switch (tokens[addr - 1].type) {
-  case TK_MINUS:
   case TK_PLUS:
+  case TK_MINUS:
   case TK_TIMES:
   case TK_DIVIDE:
-  case TK_PAR_S:
+  case TK_REMAINDER:
   case TK_MINUS_ONLY:
   case TK_TIMES_ONLY:
+  case TK_NOT:
+  case TK_PAR_S:
+  case TK_EQ:
+  case TK_NOTEQ:
+  case TK_LESS:
+  case TK_BIGGER:
+  case TK_LESS_EQ:
+  case TK_BIGGER_EQ:
+  case TK_LEFTMOVE:
+  case TK_RIGHTMOVE:
+  case TK_AND:
+  case TK_OR:
     return true;
   default:
     return false;
@@ -327,6 +355,7 @@ bool is_only(int addr) {
 
 int get_operator_priority(int operator_type) {
   switch (operator_type) {
+  case TK_NOT:
   case TK_MINUS_ONLY:
   case TK_TIMES_ONLY:
     return 8;
@@ -374,13 +403,15 @@ int cut_expression(int start, int end) {
       --cnt;
       break;
     default:
-      if (get_operator_priority(tokens[i].type) <=
-              get_operator_priority(tokens[add].type) &&
-          cnt == 0) {
-        if (!(get_operator_priority(tokens[i].type) == 8 &&
-              get_operator_priority(tokens[add].type) == 8)) {
-          add = i;
-        }
+      if (cnt != 0) {
+        break;
+      }
+      if (add == -1 ||
+          (get_operator_priority(tokens[i].type) <=
+               get_operator_priority(tokens[add].type) &&
+           !(get_operator_priority(tokens[i].type) == 8 &&
+             get_operator_priority(tokens[add].type) == 8))) {
+        add = i;
       }
       break;
     }
@@ -412,9 +443,12 @@ bool pair_first_bracket(int start, int end) {
 }
 
 word_t expr(char *e, bool *success) {
-  if (!make_token(e)) {
+  if (!make_token(e) || nr_token == 0) {
     *success = false;
     return 0;
   }
-  return expression_value(0, nr_token - 1);
+  eval_ok = true;
+  word_t ret = expression_value(0, nr_token - 1);
+  *success = eval_ok;
+  return ret;
 }
