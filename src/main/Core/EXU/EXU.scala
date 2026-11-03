@@ -50,16 +50,16 @@ class EXU extends Module {
   val Branch          = Module(new Branch())            // 分支模块
   val isBranchSuccess = Branch.ioBranch.isBranchSuccess // 分支成功
   val branchPC        = Branch.ioBranch.branchPC        // 分支目的地址
-  Branch.ioBranch.branchCtrl := Mux(ioValid, ioIDU.branchCtrl, alu.NOP) // 分支控制信号
-  Branch.ioBranch.rs1Data    := ioEXU.rs1Data                           // rs1数据
-  Branch.ioBranch.rs2Data    := ioEXU.rs2Data                           // rs2数据
-  Branch.ioBranch.pc         := ioIDU.pc                                // PC值
-  Branch.ioBranch.offset     := ioIDU.immData                           // 跳转偏移
+  Branch.ioBranch.branchCtrl := Mux(ioValid, ioIDU.branchCtrl, branch.NOP) // 分支控制信号
+  Branch.ioBranch.rs1Data    := ioEXU.rs1Data                              // rs1数据
+  Branch.ioBranch.rs2Data    := ioEXU.rs2Data                              // rs2数据
+  Branch.ioBranch.pc         := ioIDU.pc                                   // PC值
+  Branch.ioBranch.offset     := ioIDU.immData                              // 跳转偏移
 
   // CSR
   val CSR       = Module(new CSR()) // CSR模块
   val CSRResult = CSR.ioCSR.result  // CSR结果
-  CSR.ioCSR.csrCtrl := Mux(ioValid, ioIDU.csrCtrl, alu.NOP) // CSR控制信号
+  CSR.ioCSR.csrCtrl := Mux(ioValid, ioIDU.csrCtrl, csr.NOP) // CSR控制信号
   CSR.ioCSR.rs1     := operator1                            // rs1数据
   CSR.ioCSR.zimm    := operator2                            // 立即数
   CSR.ioCSR.csrData := ioIDU.csrData                        // CSR数据
@@ -68,7 +68,7 @@ class EXU extends Module {
   val DIV       = Module(new DIV()) // DIV模块
   val DIVResult = DIV.ioDIV.result  // DIV结果
   val DIVReady  = DIV.ioDIV.ready   // DIV准备完成
-  DIV.ioDIV.divCtrl := Mux(ioValid, ioIDU.divCtrl, alu.NOP) // DIV控制信号
+  DIV.ioDIV.divCtrl := Mux(ioValid, ioIDU.divCtrl, div.NOP) // DIV控制信号
   DIV.ioDIV.op1     := operator1                            // 操作数1
   DIV.ioDIV.op2     := operator2                            // 操作数2
   DIV.ioDIV.flush   := ioCtrl.pipe.flush                    // 冲刷
@@ -77,7 +77,7 @@ class EXU extends Module {
   val MUL       = Module(new MUL()) // MUL模块
   val MULResult = MUL.ioMUL.result  // MUL结果
   val MULReady  = MUL.ioMUL.ready   // MUL准备完成
-  MUL.ioMUL.mulCtrl := Mux(ioValid, ioIDU.mulCtrl, alu.NOP) // MUL控制信号
+  MUL.ioMUL.mulCtrl := Mux(ioValid, ioIDU.mulCtrl, mul.NOP) // MUL控制信号
   MUL.ioMUL.op1     := operator1                            // 操作数1
   MUL.ioMUL.op2     := operator2                            // 操作数2
   MUL.ioMUL.flush   := ioCtrl.pipe.flush                    // 冲刷
@@ -104,17 +104,19 @@ class EXU extends Module {
   )
 
   // Pipe控制
+  // 陷阱类指令：冲刷到CSR给出的地址，同时需提交到WBU完成状态更新
+  val isTrap = (ioIDU.excType === exc.ECALL) || (ioIDU.excType === exc.MRET) || (ioIDU.excType === exc.SRET)
   ioCtrl.stallReq   := ((ioIDU.mulCtrl =/= mul.NOP) && !MULReady) ||
     ((ioIDU.divCtrl =/= div.NOP) && !DIVReady) ||
     (ioIDU.memCtrl =/= mem.NOP) && !LSUReady
   ioCtrl.flushPC    := MuxCase(
     0.U(Config.Addr.Width.W),
     Seq(
-      isBranchSuccess                                                                           -> Branch.ioBranch.branchPC,
-      (ioIDU.excType === exc.ECALL || ioIDU.excType === exc.MRET || ioIDU.excType === exc.SRET) -> ioIDU.preFlushPC // TODO: CSR预冲刷逻辑待优化
+      isBranchSuccess -> Branch.ioBranch.branchPC,
+      isTrap          -> ioIDU.preFlushPC
     )
   )
-  ioCtrl.flushReq   := isBranchSuccess || (ioIDU.excType === exc.ECALL || ioIDU.excType === exc.MRET || ioIDU.excType === exc.SRET)
+  ioCtrl.flushReq   := isBranchSuccess || isTrap
   ioCtrl.pipe.valid := MuxCase(
     false.B,
     Seq(
@@ -124,10 +126,13 @@ class EXU extends Module {
       (ioIDU.divCtrl =/= div.NOP)       -> DIVReady,
       (ioIDU.memCtrl =/= mem.NOP)       -> LSUReady,
       (ioIDU.mulCtrl =/= mul.NOP)       -> MULReady,
-      (ioIDU.excType === exc.EBREAK)    -> true.B // for npc
+      (ioIDU.excType === exc.EBREAK)    -> true.B, // for npc
+      isTrap                            -> true.B
     )
   )
-  ioCtrl.busy       := (ioIDU.mulCtrl =/= mul.NOP) && !LSUReady
+  ioCtrl.busy       := ((ioIDU.mulCtrl =/= mul.NOP) && !MULReady) ||
+    ((ioIDU.divCtrl =/= div.NOP) && !DIVReady) ||
+    (ioIDU.memCtrl =/= mem.NOP) && !LSUReady
 
   // 前递IO
   ioEXUForwarding.isLoad   := (ioIDU.memCtrl === mem.LB) ||

@@ -20,8 +20,9 @@ class WBU extends Module {
   val ioWBUForwarding = IO(Flipped(new WBUForwardingBundle)) // EXU - 前递 接口
   val ioValid         = IO(Input(Bool()))                    // 上级数据有效信号
 
-  ioCtrl.flushReq := (ioEXU.excType === exc.ECALL) || (ioEXU.excType === exc.MRET) || (ioEXU.excType === exc.SRET) // 冲刷请求
-  ioCtrl.flushPC  := ioCSRWBU.flushPC                                                                              // 冲刷地址
+  ioCtrl.flushReq := ioValid &&
+    ((ioEXU.excType === exc.ECALL) || (ioEXU.excType === exc.MRET) || (ioEXU.excType === exc.SRET)) // 冲刷请求
+  ioCtrl.flushPC := ioCSRWBU.flushPC // 冲刷地址
 
   ioRegWBU.rd.en   := ioEXU.rdEn && ioValid // rd写入使能
   ioRegWBU.rd.addr := ioEXU.rdAddr          // rd写入地址
@@ -34,11 +35,11 @@ class WBU extends Module {
   ioWBUForwarding.csr.addr := ioEXU.csrAddr               // 前递csr写入地址
   ioWBUForwarding.csr.data := ioEXU.csrResult             // 前递csr写入数据
 
-  ioCSRWBU.csr.en   := ioEXU.csrWriteEn // 前递csr写入使能
-  ioCSRWBU.csr.addr := ioEXU.csrAddr    // 前递csr写入地址
-  ioCSRWBU.csr.data := ioEXU.csrResult  // 前递csr写入数据
-  ioCSRWBU.excType  := ioEXU.excType    // 异常类型
-  ioCSRWBU.pc       := ioEXU.pc         // 异常地址
+  ioCSRWBU.csr.en   := ioEXU.csrWriteEn && ioValid // 前递csr写入使能
+  ioCSRWBU.csr.addr := ioEXU.csrAddr               // 前递csr写入地址
+  ioCSRWBU.csr.data := ioEXU.csrResult             // 前递csr写入数据
+  ioCSRWBU.excType  := ioEXU.excType               // 异常类型
+  ioCSRWBU.pc       := ioEXU.pc                    // 异常地址
 
   ioCtrl.pipe.valid := DontCare // 无下一阶段
 
