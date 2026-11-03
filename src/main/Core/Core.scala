@@ -61,7 +61,7 @@ class Core extends Module {
   IFU.ioValid <> PC_IF.ioValid // PC_IF 数据有效
   IDU.ioValid <> IF_ID.ioValid // IF_ID 数据有效
   EXU.ioValid <> ID_EX.ioValid // ID_EX 数据有效
-  WBU.ioValid <> EX_WB.ioValid // ID_EX 数据有效
+  WBU.ioValid <> EX_WB.ioValid // EX_WB 数据有效
 
   IDU.ioRegIDU <> regFile.ioRegIDU // IDU - 通用寄存器 数据通路
   IDU.ioCSRIDU <> csrFile.ioCSRIDU // IDU - csr寄存器 数据通路
