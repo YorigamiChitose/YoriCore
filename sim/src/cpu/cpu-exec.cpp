@@ -2,6 +2,7 @@
 #include "debug.h"
 #include "isa/isa.h"
 #include "utils.h"
+#include "macro.h"
 #include "verilator/verilator.h"
 #include <cstdint>
 
@@ -46,7 +47,7 @@ void assert_fail_msg(void) { statistic(); }
 
 bool g_print_step = false;
 void cpu_exec(uint64_t n) {
-  g_print_step = (n < CONFIG_ITRACE_PRINT_MAXNUM);
+  IFDEF(CONFIG_ITRACE_PRINT_MAXNUM, g_print_step = (n < CONFIG_ITRACE_PRINT_MAXNUM));
   switch (npc_state.state) {
   case NPC_END:
   case NPC_ABORT:
