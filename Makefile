@@ -1,5 +1,5 @@
 # 顶层路径
-TOP_DIR   = $(PWD)
+TOP_DIR   := $(CURDIR)
 BUILD_DIR = $(TOP_DIR)/build
 TOP_MODULE = Top
 

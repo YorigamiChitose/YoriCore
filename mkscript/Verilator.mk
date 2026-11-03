@@ -18,6 +18,9 @@ LDFLAGS = $(addprefix -LDFLAGS , -lreadline)
 AUTOCONFIG_H = $(VERILATOR_INC_DIR)/autoconf/autoconf.h
 AUTOCONFIG_CONFIG = $(TOP_DIR)/.config
 
+ARGS ?= 
+IMG ?= 
+
 $(VERILATOR_TARGET): $(VERILATOR_VSRC_FILES) $(VERILATOR_SRC_FILES) $(CHISEL_TOP_MODULE) $(AUTOCONFIG_H) $(VERILATOR_CONFIG)
 	@echo "$(COLOR_R)--- Building $(subst $(TOP_DIR)/,,$(VERILATOR_TARGET)) ---$(COLOR_NO)"
 	@mkdir -p $(VERILATOR_BUILD_DIR)
@@ -56,5 +59,5 @@ menuconfig:
 
 run: $(VERILATOR_TARGET)
 	@echo "$(COLOR_R)--- Simulation ---$(COLOR_NO)"
-	@$(VERILATOR_BUILD_DIR)/V$(MODULE)
+	@$(VERILATOR_BUILD_DIR)/V$(MODULE) $(ARGS) $(IMG)
 	@echo "$(COLOR_G)--- Simulation completed ---$(COLOR_NO)"
