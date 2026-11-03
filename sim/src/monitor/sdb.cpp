@@ -62,36 +62,45 @@ static struct {
     // {"trace", "Usage: trace\t[str]\t\t - Check the inst.", cmd_trace}
 };
 
-char *find_next_str(char *args) {
+#define SDB_MAX_ARGS 8
+
+/* Split the raw argument string in place into space-separated tokens.
+ * Returns the token count (capped at max); argv entries point into args.
+ */
+static int split_args(char *args, char **argv, int max) {
   if (args == NULL) {
-    return NULL;
+    return 0;
   }
-  int i = 0;
-  while (args[++i] != '\0') {
-  }
-  for (int j = i; j < i + 64; j++) {
-    if (args[j] == '\0') {
-      return &args[++i];
+  int argc = 0;
+  char *p = args;
+  while (argc < max) {
+    while (*p == ' ') {
+      p++;
+    }
+    if (*p == '\0') {
+      break;
+    }
+    argv[argc++] = p;
+    while (*p != '\0' && *p != ' ') {
+      p++;
+    }
+    if (*p == ' ') {
+      *p = '\0';
+      p++;
     }
   }
-  return NULL;
+  return argc;
 }
 
 char *get_arguments(char *args, int num) {
-  char *arg = args;
-  int num_temp = num;
-  int i = 0;
-  while (--num_temp + 1 && arg != NULL) {
-    if (num == num_temp + 1) {
-      arg = strtok(arg, " ");
-    } else {
-      i = 0;
-      while (arg[i++] != '\0') {
-      }
-      arg = strtok(arg + i, " ");
-    }
+  if (args == NULL || num < 1) {
+    return NULL;
   }
-  return arg;
+  char *argv[SDB_MAX_ARGS];
+  if (split_args(args, argv, SDB_MAX_ARGS) < num) {
+    return NULL;
+  }
+  return argv[num - 1];
 }
 
 #define NR_CMD ARRLEN(cmd_table)
@@ -112,20 +121,21 @@ static int cmd_q(char *args) {
 }
 
 static int cmd_help(char *args) {
-  char *arg = strtok(NULL, " ");
+  char *argv[1];
+  int argc = split_args(args, argv, 1);
   int i;
-  if (arg == NULL) {
+  if (argc == 0) {
     for (i = 0; i < NR_CMD; i++) {
       printf("%-6s- %s\n", cmd_table[i].name, cmd_table[i].description);
     }
   } else {
     for (i = 0; i < NR_CMD; i++) {
-      if (strcmp(arg, cmd_table[i].name) == 0) {
+      if (strcmp(argv[0], cmd_table[i].name) == 0) {
         printf("%-6s- %s\n", cmd_table[i].name, cmd_table[i].description);
         return 0;
       }
     }
-    printf("Error! Unknown command '%s'\n", arg);
+    printf("Error! Unknown command '%s'\n", argv[0]);
   }
   return 0;
 }

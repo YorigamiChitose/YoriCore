@@ -84,6 +84,9 @@ void init_monitor(int argc, char *argv[]) {
   /* init isa */
   init_isa();
 
+  /* init sdb */
+  init_sdb();
+
   /* read img */
   load_img();
 
