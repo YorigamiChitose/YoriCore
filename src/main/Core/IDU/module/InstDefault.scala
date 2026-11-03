@@ -134,6 +134,6 @@ object exc {
 
 object ALL {
   val defaultList =
-    rs1.NOP :: rs2.NOP :: rd.NOP :: op1.NOP :: op2.NOP :: imm.N :: alu.NOP :: branch.NOP :: mul.NOP :: div.NOP :: mem.NOP :: csr.NOP :: exc.ILLEGAL_INST :: Nil
+    rs1.NOP :: rs2.NOP :: rd.NOP :: op1.NOP :: op2.NOP :: alu.NOP :: imm.N :: branch.NOP :: mul.NOP :: div.NOP :: mem.NOP :: csr.NOP :: exc.ILLEGAL_INST :: Nil
   val instList    = RV32I.table ++ RV32M.table ++ RVMSU.table
 }

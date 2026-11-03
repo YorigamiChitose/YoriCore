@@ -43,8 +43,10 @@ class IDU extends Module {
   val immI     = Cat(Fill(Config.Data.XLEN - 12, inst(31)), inst(31, 20))
   val immS     = Cat(Fill(Config.Data.XLEN - 12, inst(31)), inst(31, 25), inst(11, 7))
   val immB     = Cat(Fill(Config.Data.XLEN - 12, inst(31)), inst(7), inst(30, 25), inst(11, 8), 0.U(1.W))
-  val immU     = Cat(Fill(32, inst(31)), Cat(inst(31, 12), Fill(12, 0.U)))
-  val immJ     = Cat(Fill(Config.Data.XLEN - 20, inst(31)), inst(31), inst(19, 12), inst(20), inst(30, 21), Fill(1, 0.U))
+  val immU     =
+    if (Config.Data.XLEN > 32) Cat(Fill(Config.Data.XLEN - 32, inst(31)), inst(31, 12), Fill(12, 0.U))
+    else Cat(inst(31, 12), Fill(12, 0.U))
+  val immJ     = Cat(Fill(Config.Data.XLEN - 20, inst(31)), inst(19, 12), inst(20), inst(30, 21), Fill(1, 0.U))
   val immSHAMT = Cat(Fill(Config.Data.XLEN - 6, 0.U), inst(25, 20))
   val immZIMM  = Cat(Fill(Config.Data.XLEN - 5, 0.U), inst(19, 15))
 
@@ -58,7 +60,6 @@ class IDU extends Module {
       (immType === imm.U)     -> immU,
       (immType === imm.S)     -> immS,
       (immType === imm.R)     -> immR,
-      (immType === imm.S)     -> immS,
       (immType === imm.N)     -> immN,
       (immType === imm.SHAMT) -> immSHAMT,
       (immType === imm.ZIMM)  -> immZIMM
