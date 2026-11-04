@@ -65,19 +65,19 @@ class EXU extends Module {
   CSR.ioCSR.csrData := ioIDU.csrData                        // CSR数据
 
   // DIV
-  val DIV       = Module(new DIV()) // DIV模块
-  val DIVResult = DIV.ioDIV.result  // DIV结果
-  val DIVReady  = DIV.ioDIV.ready   // DIV准备完成
+  val DIV       = Module(new AdvancedDIV()) // 恢复余数法硬件除法器
+  val DIVResult = DIV.ioDIV.result          // DIV结果
+  val DIVReady  = DIV.ioDIV.ready           // DIV准备完成
   DIV.ioDIV.divCtrl := Mux(ioValid, ioIDU.divCtrl, div.NOP) // DIV控制信号
   DIV.ioDIV.op1     := operator1                            // 操作数1
   DIV.ioDIV.op2     := operator2                            // 操作数2
   DIV.ioDIV.flush   := ioCtrl.pipe.flush                    // 冲刷
 
   // MLU
-  val MUL       = Module(new MUL()) // MUL模块
-  val MULResult = MUL.ioMUL.result  // MUL结果
-  val MULReady  = MUL.ioMUL.ready   // MUL准备完成
-  MUL.ioMUL.mulCtrl := Mux(ioValid, ioIDU.mulCtrl, mul.NOP) // MUL控制信号
+  val MUL       = Module(new AdvancedMUL())
+  val MULResult = MUL.ioMUL.result // 乘法结果
+  val MULReady  = MUL.ioMUL.ready  // 准备完成
+  MUL.ioMUL.mulCtrl := Mux(ioValid, ioIDU.mulCtrl, mul.NOP) // 乘法控制信号
   MUL.ioMUL.op1     := operator1                            // 操作数1
   MUL.ioMUL.op2     := operator2                            // 操作数2
   MUL.ioMUL.flush   := ioCtrl.pipe.flush                    // 冲刷
@@ -140,7 +140,8 @@ class EXU extends Module {
     (ioIDU.memCtrl === mem.LH) ||
     (ioIDU.memCtrl === mem.LHU) ||
     (ioIDU.memCtrl === mem.LW)
-  ioEXUForwarding.isMD     := false.B          // TODO: (ioIDU.divCtrl =/= div.NOP) || (ioIDU.mulCtrl =/= mul.NOP) // 当前为乘除任务
+  ioEXUForwarding.isMD     := ((ioIDU.mulCtrl =/= mul.NOP) && !MULReady) ||
+    ((ioIDU.divCtrl =/= div.NOP) && !DIVReady)
   ioEXUForwarding.rd.en    := ioIDU.rdEn       // 目的寄存器使能
   ioEXUForwarding.rd.addr  := ioIDU.rdAddr     // 目的寄存器地址
   ioEXUForwarding.rd.data  := EXUResult        // 目的寄存器数据
