@@ -95,16 +95,27 @@ object branch {
 }
 
 object mem {
-  val WIDTH = log2Ceil(9)
-  val NOP   = 0.U(WIDTH.W)
-  val LB    = 1.U(WIDTH.W)
-  val LH    = 2.U(WIDTH.W)
-  val LBU   = 3.U(WIDTH.W)
-  val LHU   = 4.U(WIDTH.W)
-  val LW    = 5.U(WIDTH.W)
-  val SB    = 6.U(WIDTH.W)
-  val SH    = 7.U(WIDTH.W)
-  val SW    = 8.U(WIDTH.W)
+  val WIDTH   = log2Ceil(20)
+  val NOP     = 0.U(WIDTH.W)
+  val LB      = 1.U(WIDTH.W)
+  val LH      = 2.U(WIDTH.W)
+  val LBU     = 3.U(WIDTH.W)
+  val LHU     = 4.U(WIDTH.W)
+  val LW      = 5.U(WIDTH.W)
+  val SB      = 6.U(WIDTH.W)
+  val SH      = 7.U(WIDTH.W)
+  val SW      = 8.U(WIDTH.W)
+  val AMOSWAP = 9.U(WIDTH.W)
+  val AMOADD  = 10.U(WIDTH.W)
+  val AMOXOR  = 11.U(WIDTH.W)
+  val AMOAND  = 12.U(WIDTH.W)
+  val AMOOR   = 13.U(WIDTH.W)
+  val AMOMIN  = 14.U(WIDTH.W)
+  val AMOMAX  = 15.U(WIDTH.W)
+  val AMOMINU = 16.U(WIDTH.W)
+  val AMOMAXU = 17.U(WIDTH.W)
+  val LR      = 18.U(WIDTH.W)
+  val SC      = 19.U(WIDTH.W)
 }
 
 object csr {
@@ -135,5 +146,5 @@ object exc {
 object ALL {
   val defaultList =
     rs1.NOP :: rs2.NOP :: rd.NOP :: op1.NOP :: op2.NOP :: alu.NOP :: imm.N :: branch.NOP :: mul.NOP :: div.NOP :: mem.NOP :: csr.NOP :: exc.ILLEGAL_INST :: Nil
-  val instList    = RV32I.table ++ RV32M.table ++ RVMSU.table
+  val instList    = RV32I.table ++ RV32M.table ++ RVMSU.table ++ RV32A.table
 }
