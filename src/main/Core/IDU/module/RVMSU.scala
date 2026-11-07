@@ -11,9 +11,9 @@ object RVMSU {
     val SFENCE_VMA = BitPat("b0001001_?????_?????_000_00000_11100_11")
   }
   val table = Array(
-    INST.SRET       -> List(rs1.NOP, rs2.NOP, rd.NOP, op1.NOP, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.NOP, csr.NOP, exc.SRET),
-    INST.MRET       -> List(rs1.NOP, rs2.NOP, rd.NOP, op1.NOP, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.NOP, csr.NOP, exc.MRET),
-    INST.WFI        -> List(rs1.NOP, rs2.NOP, rd.NOP, op1.NOP, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.NOP, csr.NOP, exc.WFI),
-    INST.SFENCE_VMA -> List(rs1.NOP, rs2.NOP, rd.NOP, op1.NOP, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.NOP, csr.NOP, exc.SFENCE_VMA)
+    INST.SRET       -> DecodeSig(rs1.NOP, rs2.NOP, rd.NOP, op1.NOP, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.NOP, csr.NOP, exc.SRET),
+    INST.MRET       -> DecodeSig(rs1.NOP, rs2.NOP, rd.NOP, op1.NOP, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.NOP, csr.NOP, exc.MRET),
+    INST.WFI        -> DecodeSig(rs1.NOP, rs2.NOP, rd.NOP, op1.NOP, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.NOP, csr.NOP, exc.WFI),
+    INST.SFENCE_VMA -> DecodeSig(rs1.NOP, rs2.NOP, rd.NOP, op1.NOP, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.NOP, csr.NOP, exc.SFENCE_VMA)
   )
 }

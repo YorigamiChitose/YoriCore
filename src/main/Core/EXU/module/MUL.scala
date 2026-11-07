@@ -7,7 +7,7 @@ import Core.IDU.module._
 import Tools.Config.Config
 
 class MULBundle extends Bundle {
-  val mulCtrl = Input(UInt(mul.WIDTH.W))         // 乘法器控制信号
+  val mulCtrl = Input(mul())                     // 乘法器控制信号
   val op1     = Input(UInt(Config.Data.XLEN.W))  // 操作数1
   val op2     = Input(UInt(Config.Data.XLEN.W))  // 操作数2
   val flush   = Input(Bool())                    // 冲刷

@@ -41,7 +41,7 @@ object LSUCtrl {
 }
 
 class LSUBundle extends Bundle {
-  val memCtrl = Input(UInt(mem.WIDTH.W))         // LSU控制信号
+  val memCtrl = Input(mem())                          // LSU控制信号
   val addr    = Input(UInt(Config.Addr.Width.W)) // 地址计算结果
   val dataIn  = Input(UInt(Config.Data.XLEN.W))  // 保存数据（AMO = rs2 操作数）
   val flush   = Input(Bool())                    // 冲刷
@@ -57,7 +57,7 @@ class LSU extends Module {
   val AW   = Config.Addr.Width
 
   // 普通 load/store 的长度与符号
-  val isSigned :: dataLen :: Nil = ListLookup(ioLSU.memCtrl, LSUCtrl.defaultList, LSUCtrl.table)
+  val isSigned :: dataLen :: Nil = ListLookup(ioLSU.memCtrl.asUInt, LSUCtrl.defaultList, LSUCtrl.table)
 
   val sIdle :: sRead :: sWrite :: sDone :: Nil = Enum(4)
   val state                                    = RegInit(sIdle)

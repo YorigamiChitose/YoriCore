@@ -7,7 +7,7 @@ import Tools.Config.Config
 import Core.IDU.module._
 
 class BranchBundle extends Bundle {
-  val branchCtrl      = Input(UInt(branch.WIDTH.W))       // 分支控制信号
+  val branchCtrl      = Input(branch())                     // 分支控制信号
   val rs1Data         = Input(UInt(Config.Data.XLEN.W))   // rs1数据
   val rs2Data         = Input(UInt(Config.Data.XLEN.W))   // rs2数据
   val pc              = Input(UInt(Config.Addr.Width.W))  // PC值

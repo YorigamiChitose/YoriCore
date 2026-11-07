@@ -7,7 +7,7 @@ import Core.IDU.module._
 import Tools.Config.Config
 
 class CSRBundle extends Bundle {
-  val csrCtrl = Input(UInt(csr.WIDTH.W))         // CSR计算控制
+  val csrCtrl = Input(csr())         // CSR计算控制
   val rs1     = Input(UInt(Config.Data.XLEN.W))  // rs1数据
   val zimm    = Input(UInt(Config.Data.XLEN.W))  // 立即数
   val csrData = Input(UInt(Config.Data.XLEN.W))  // csr数据

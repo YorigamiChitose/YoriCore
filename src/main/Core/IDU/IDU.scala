@@ -21,9 +21,28 @@ class IDU extends Module {
 
   val inst = Mux(ioValid, ioIFU.inst, 0.U) // 指令
 
-  // 指令ListLookup解析
-  val rs1En :: rs2En :: rdEn :: op1Type :: op2Type :: aluCtrl :: immType :: branchCtrl :: mulCtrl :: divCtrl :: memCtrl :: csrCtrl :: excType :: Nil =
-    ListLookup(inst, ALL.defaultList, ALL.instList)
+  // 指令译码解析（Mux1H 逐字段查表，支持 ChiselEnum 强类型）
+  val matches = ALL.instList.toSeq.map { case (pat, _) => inst === pat }
+  val sel     = matches :+ !matches.reduce(_ || _)
+
+  val (rs1En, rs2En, rdEn, op1Type, op2Type, aluCtrl, immType, branchCtrl, mulCtrl, divCtrl, memCtrl, csrCtrl, excType) =
+    suppressEnumCastWarning {
+      (
+        Mux1H(sel, ALL.instList.toSeq.map(_._2.rs1En)      :+ ALL.defaultSig.rs1En),
+        Mux1H(sel, ALL.instList.toSeq.map(_._2.rs2En)      :+ ALL.defaultSig.rs2En),
+        Mux1H(sel, ALL.instList.toSeq.map(_._2.rdEn)       :+ ALL.defaultSig.rdEn),
+        Mux1H(sel, ALL.instList.toSeq.map(_._2.op1Type)    :+ ALL.defaultSig.op1Type),
+        Mux1H(sel, ALL.instList.toSeq.map(_._2.op2Type)    :+ ALL.defaultSig.op2Type),
+        Mux1H(sel, ALL.instList.toSeq.map(_._2.aluCtrl)    :+ ALL.defaultSig.aluCtrl),
+        Mux1H(sel, ALL.instList.toSeq.map(_._2.immType)    :+ ALL.defaultSig.immType),
+        Mux1H(sel, ALL.instList.toSeq.map(_._2.branchCtrl) :+ ALL.defaultSig.branchCtrl),
+        Mux1H(sel, ALL.instList.toSeq.map(_._2.mulCtrl)    :+ ALL.defaultSig.mulCtrl),
+        Mux1H(sel, ALL.instList.toSeq.map(_._2.divCtrl)    :+ ALL.defaultSig.divCtrl),
+        Mux1H(sel, ALL.instList.toSeq.map(_._2.memCtrl)    :+ ALL.defaultSig.memCtrl),
+        Mux1H(sel, ALL.instList.toSeq.map(_._2.csrCtrl)    :+ ALL.defaultSig.csrCtrl),
+        Mux1H(sel, ALL.instList.toSeq.map(_._2.excType)    :+ ALL.defaultSig.excType)
+      )
+    }
 
   val rs1Data = Mux(ioIDUForwarding.rs1.needPass, ioIDUForwarding.rs1.data, ioRegIDU.rs1.data) // 通用寄存器数据
   val rs2Data = Mux(ioIDUForwarding.rs2.needPass, ioIDUForwarding.rs2.data, ioRegIDU.rs2.data) // 通用寄存器数据

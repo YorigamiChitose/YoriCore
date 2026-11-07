@@ -24,7 +24,7 @@ class SI_EX_WB extends Bundle {
   val ioValid = Input(Bool())
   val pc      = Input(UInt(Config.Addr.Width.W)) // PC值
   val inst    = Input(UInt(Config.Inst.Width.W)) // 指令
-  val excType = Input(UInt(exc.WIDTH.W))
+  val excType = Input(exc())
 }
 
 class SimInfoBundle extends Bundle {

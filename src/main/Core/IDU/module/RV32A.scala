@@ -20,16 +20,16 @@ object RV32A {
     val AMOMAXU = BitPat("b11100??_?????_?????_010_?????_0101111")
   }
   val table = Array(
-    INST.LR      -> List(rs1.EN, rs2.NOP, rd.EN, op1.RS1, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.LR, csr.NOP, exc.NOP),
-    INST.SC      -> List(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.SC, csr.NOP, exc.NOP),
-    INST.AMOSWAP -> List(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.AMOSWAP, csr.NOP, exc.NOP),
-    INST.AMOADD  -> List(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.AMOADD, csr.NOP, exc.NOP),
-    INST.AMOXOR  -> List(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.AMOXOR, csr.NOP, exc.NOP),
-    INST.AMOAND  -> List(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.AMOAND, csr.NOP, exc.NOP),
-    INST.AMOOR   -> List(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.AMOOR, csr.NOP, exc.NOP),
-    INST.AMOMIN  -> List(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.AMOMIN, csr.NOP, exc.NOP),
-    INST.AMOMAX  -> List(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.AMOMAX, csr.NOP, exc.NOP),
-    INST.AMOMINU -> List(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.AMOMINU, csr.NOP, exc.NOP),
-    INST.AMOMAXU -> List(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.AMOMAXU, csr.NOP, exc.NOP)
+    INST.LR      -> DecodeSig(rs1.EN, rs2.NOP, rd.EN, op1.RS1, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.LR, csr.NOP, exc.NOP),
+    INST.SC      -> DecodeSig(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.SC, csr.NOP, exc.NOP),
+    INST.AMOSWAP -> DecodeSig(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.AMOSWAP, csr.NOP, exc.NOP),
+    INST.AMOADD  -> DecodeSig(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.AMOADD, csr.NOP, exc.NOP),
+    INST.AMOXOR  -> DecodeSig(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.AMOXOR, csr.NOP, exc.NOP),
+    INST.AMOAND  -> DecodeSig(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.AMOAND, csr.NOP, exc.NOP),
+    INST.AMOOR   -> DecodeSig(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.AMOOR, csr.NOP, exc.NOP),
+    INST.AMOMIN  -> DecodeSig(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.AMOMIN, csr.NOP, exc.NOP),
+    INST.AMOMAX  -> DecodeSig(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.AMOMAX, csr.NOP, exc.NOP),
+    INST.AMOMINU -> DecodeSig(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.AMOMINU, csr.NOP, exc.NOP),
+    INST.AMOMAXU -> DecodeSig(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.AMOMAXU, csr.NOP, exc.NOP)
   )
 }

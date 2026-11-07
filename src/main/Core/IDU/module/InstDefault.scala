@@ -20,131 +20,68 @@ object rd {
   val EN  = true.B
 }
 
-object op1 {
-  val WIDTH = log2Ceil(4)
-  val NOP   = 0.U(WIDTH.W)
-  val RS1   = 1.U(WIDTH.W)
-  val PC    = 2.U(WIDTH.W)
-  val ZERO  = 3.U(WIDTH.W) // lui
+object op1 extends ChiselEnum {
+  val NOP, RS1, PC, ZERO = Value
 }
 
-object op2 {
-  val WIDTH = log2Ceil(4)
-  val NOP   = 0.U(WIDTH.W)
-  val RS2   = 1.U(WIDTH.W)
-  val IMM   = 2.U(WIDTH.W)
-  val FORE  = 3.U(WIDTH.W)
+object op2 extends ChiselEnum {
+  val NOP, RS2, IMM, FORE = Value
 }
 
-object imm {
-  val WIDTH = log2Ceil(9)
-  val N     = 0.U(WIDTH.W)
-  val I     = 1.U(WIDTH.W)
-  val S     = 2.U(WIDTH.W)
-  val B     = 3.U(WIDTH.W)
-  val U     = 4.U(WIDTH.W)
-  val J     = 5.U(WIDTH.W)
-  val R     = 6.U(WIDTH.W)
-  val SHAMT = 7.U(WIDTH.W)
-  val ZIMM  = 8.U(WIDTH.W)
+object imm extends ChiselEnum {
+  val N, I, S, B, U, J, R, SHAMT, ZIMM = Value
 }
 
-object alu {
-  val WIDTH = log2Ceil(11)
-  val NOP   = 0.U(WIDTH.W)
-  val ADD   = 1.U(WIDTH.W)
-  val SUB   = 2.U(WIDTH.W)
-  val SLT   = 3.U(WIDTH.W)
-  val SLTU  = 4.U(WIDTH.W)
-  val XOR   = 5.U(WIDTH.W)
-  val OR    = 6.U(WIDTH.W)
-  val AND   = 7.U(WIDTH.W)
-  val SLL   = 8.U(WIDTH.W)
-  val SRL   = 9.U(WIDTH.W)
-  val SRA   = 10.U(WIDTH.W)
+object alu extends ChiselEnum {
+  val NOP, ADD, SUB, SLT, SLTU, XOR, OR, AND, SLL, SRL, SRA = Value
 }
 
-object mul {
-  val WIDTH  = log2Ceil(5)
-  val NOP    = 0.U(WIDTH.W)
-  val MUL    = 1.U(WIDTH.W)
-  val MULH   = 2.U(WIDTH.W)
-  val MULHU  = 3.U(WIDTH.W)
-  val MULHSU = 4.U(WIDTH.W)
-}
-object div {
-  val WIDTH = log2Ceil(5)
-  val NOP   = 0.U(WIDTH.W)
-  val DIV   = 1.U(WIDTH.W)
-  val REM   = 2.U(WIDTH.W)
-  val DIVU  = 3.U(WIDTH.W)
-  val REMU  = 4.U(WIDTH.W)
+object mul extends ChiselEnum {
+  val NOP, MUL, MULH, MULHU, MULHSU = Value
 }
 
-object branch {
-  val WIDTH = log2Ceil(9)
-  val NOP   = 0.U(WIDTH.W)
-  val BEQ   = 1.U(WIDTH.W)
-  val BNE   = 2.U(WIDTH.W)
-  val BLT   = 3.U(WIDTH.W)
-  val BGE   = 4.U(WIDTH.W)
-  val BLTU  = 5.U(WIDTH.W)
-  val BGEU  = 6.U(WIDTH.W)
-  val JAL   = 7.U(WIDTH.W)
-  val JALR  = 8.U(WIDTH.W)
+object div extends ChiselEnum {
+  val NOP, DIV, REM, DIVU, REMU = Value
 }
 
-object mem {
-  val WIDTH   = log2Ceil(20)
-  val NOP     = 0.U(WIDTH.W)
-  val LB      = 1.U(WIDTH.W)
-  val LH      = 2.U(WIDTH.W)
-  val LBU     = 3.U(WIDTH.W)
-  val LHU     = 4.U(WIDTH.W)
-  val LW      = 5.U(WIDTH.W)
-  val SB      = 6.U(WIDTH.W)
-  val SH      = 7.U(WIDTH.W)
-  val SW      = 8.U(WIDTH.W)
-  val AMOSWAP = 9.U(WIDTH.W)
-  val AMOADD  = 10.U(WIDTH.W)
-  val AMOXOR  = 11.U(WIDTH.W)
-  val AMOAND  = 12.U(WIDTH.W)
-  val AMOOR   = 13.U(WIDTH.W)
-  val AMOMIN  = 14.U(WIDTH.W)
-  val AMOMAX  = 15.U(WIDTH.W)
-  val AMOMINU = 16.U(WIDTH.W)
-  val AMOMAXU = 17.U(WIDTH.W)
-  val LR      = 18.U(WIDTH.W)
-  val SC      = 19.U(WIDTH.W)
+object branch extends ChiselEnum {
+  val NOP, BEQ, BNE, BLT, BGE, BLTU, BGEU, JAL, JALR = Value
 }
 
-object csr {
-  val WIDTH = log2Ceil(7)
-  val NOP   = 0.U(WIDTH.W)
-  val RC    = 1.U(WIDTH.W)
-  val RW    = 2.U(WIDTH.W)
-  val RS    = 3.U(WIDTH.W)
-  val RCI   = 4.U(WIDTH.W)
-  val RWI   = 5.U(WIDTH.W)
-  val RSI   = 6.U(WIDTH.W)
+object mem extends ChiselEnum {
+  val NOP, LB, LH, LBU, LHU, LW, SB, SH, SW,
+      AMOSWAP, AMOADD, AMOXOR, AMOAND, AMOOR,
+      AMOMIN, AMOMAX, AMOMINU, AMOMAXU, LR, SC = Value
 }
 
-object exc {
-  val WIDTH        = log2Ceil(10)
-  val NOP          = 0.U(WIDTH.W)
-  val EBREAK       = 1.U(WIDTH.W)
-  val ECALL        = 2.U(WIDTH.W)
-  val ILLEGAL_INST = 3.U(WIDTH.W)
-  val MRET         = 4.U(WIDTH.W)
-  val SRET         = 5.U(WIDTH.W)
-  val WFI          = 6.U(WIDTH.W)
-  val SFENCE_VMA   = 7.U(WIDTH.W)
-  val FENCE        = 8.U(WIDTH.W)
-  val FENCE_I      = 9.U(WIDTH.W)
+object csr extends ChiselEnum {
+  val NOP, RC, RW, RS, RCI, RWI, RSI = Value
 }
+
+object exc extends ChiselEnum {
+  val NOP, EBREAK, ECALL, ILLEGAL_INST, MRET, SRET, WFI, SFENCE_VMA, FENCE, FENCE_I = Value
+}
+
+case class DecodeSig(
+  rs1En:      Bool,
+  rs2En:      Bool,
+  rdEn:       Bool,
+  op1Type:    op1.Type,
+  op2Type:    op2.Type,
+  aluCtrl:    alu.Type,
+  immType:    imm.Type,
+  branchCtrl: branch.Type,
+  mulCtrl:    mul.Type,
+  divCtrl:    div.Type,
+  memCtrl:    mem.Type,
+  csrCtrl:    csr.Type,
+  excType:    exc.Type
+)
 
 object ALL {
-  val defaultList =
-    rs1.NOP :: rs2.NOP :: rd.NOP :: op1.NOP :: op2.NOP :: alu.NOP :: imm.N :: branch.NOP :: mul.NOP :: div.NOP :: mem.NOP :: csr.NOP :: exc.ILLEGAL_INST :: Nil
-  val instList    = RV32I.table ++ RV32M.table ++ RVMSU.table ++ RV32A.table
+  val defaultSig = DecodeSig(
+    rs1.NOP, rs2.NOP, rd.NOP,
+    op1.NOP, op2.NOP, alu.NOP, imm.N, branch.NOP, mul.NOP, div.NOP, mem.NOP, csr.NOP, exc.ILLEGAL_INST
+  )
+  val instList = RV32I.table ++ RV32M.table ++ RVMSU.table ++ RV32A.table
 }

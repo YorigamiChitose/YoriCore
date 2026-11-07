@@ -15,13 +15,13 @@ object RV32M {
     val REMU   = BitPat("b0000001_?????_?????_111_?????_01100_11")
   }
   val table = Array(
-    INST.MUL    -> List(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.RS2, alu.NOP, imm.R, branch.NOP, mul.MUL, div.NOP, mem.NOP, csr.NOP, exc.NOP),
-    INST.MULH   -> List(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.RS2, alu.NOP, imm.R, branch.NOP, mul.MULH, div.NOP, mem.NOP, csr.NOP, exc.NOP),
-    INST.MULHU  -> List(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.RS2, alu.NOP, imm.R, branch.NOP, mul.MULHU, div.NOP, mem.NOP, csr.NOP, exc.NOP),
-    INST.MULHSU -> List(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.RS2, alu.NOP, imm.R, branch.NOP, mul.MULHSU, div.NOP, mem.NOP, csr.NOP, exc.NOP),
-    INST.DIV    -> List(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.RS2, alu.NOP, imm.R, branch.NOP, mul.NOP, div.DIV, mem.NOP, csr.NOP, exc.NOP),
-    INST.DIVU   -> List(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.RS2, alu.NOP, imm.R, branch.NOP, mul.NOP, div.DIVU, mem.NOP, csr.NOP, exc.NOP),
-    INST.REM    -> List(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.RS2, alu.NOP, imm.R, branch.NOP, mul.NOP, div.REM, mem.NOP, csr.NOP, exc.NOP),
-    INST.REMU   -> List(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.RS2, alu.NOP, imm.R, branch.NOP, mul.NOP, div.REMU, mem.NOP, csr.NOP, exc.NOP)
+    INST.MUL    -> DecodeSig(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.RS2, alu.NOP, imm.R, branch.NOP, mul.MUL, div.NOP, mem.NOP, csr.NOP, exc.NOP),
+    INST.MULH   -> DecodeSig(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.RS2, alu.NOP, imm.R, branch.NOP, mul.MULH, div.NOP, mem.NOP, csr.NOP, exc.NOP),
+    INST.MULHU  -> DecodeSig(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.RS2, alu.NOP, imm.R, branch.NOP, mul.MULHU, div.NOP, mem.NOP, csr.NOP, exc.NOP),
+    INST.MULHSU -> DecodeSig(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.RS2, alu.NOP, imm.R, branch.NOP, mul.MULHSU, div.NOP, mem.NOP, csr.NOP, exc.NOP),
+    INST.DIV    -> DecodeSig(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.RS2, alu.NOP, imm.R, branch.NOP, mul.NOP, div.DIV, mem.NOP, csr.NOP, exc.NOP),
+    INST.DIVU   -> DecodeSig(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.RS2, alu.NOP, imm.R, branch.NOP, mul.NOP, div.DIVU, mem.NOP, csr.NOP, exc.NOP),
+    INST.REM    -> DecodeSig(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.RS2, alu.NOP, imm.R, branch.NOP, mul.NOP, div.REM, mem.NOP, csr.NOP, exc.NOP),
+    INST.REMU   -> DecodeSig(rs1.EN, rs2.EN, rd.EN, op1.RS1, op2.RS2, alu.NOP, imm.R, branch.NOP, mul.NOP, div.REMU, mem.NOP, csr.NOP, exc.NOP)
   )
 }

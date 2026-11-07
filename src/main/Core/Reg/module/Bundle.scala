@@ -35,7 +35,7 @@ class CSRIDUBundle extends Bundle {
     val data = Output(UInt(Config.Csr.DataWidth.W))
   }
   val preFlushPC = Output(UInt(Config.Csr.DataWidth.W))
-  val excType    = Input(UInt(exc.WIDTH.W))
+  val excType    = Input(exc())
 }
 
 class CSRWBUBundle extends Bundle {
@@ -46,5 +46,5 @@ class CSRWBUBundle extends Bundle {
   }
   val flushPC = Output(UInt(Config.Csr.DataWidth.W))
   val pc      = Input(UInt(Config.Addr.Width.W))
-  val excType = Input(UInt(exc.WIDTH.W))
+  val excType = Input(exc())
 }
